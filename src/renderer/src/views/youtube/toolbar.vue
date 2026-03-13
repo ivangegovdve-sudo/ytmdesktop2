@@ -5,6 +5,8 @@
       :class="{ 'pl-20': window.api.platform.isMacOS }"
     >
       <button
+        aria-label="Go Back"
+        title="Go Back"
         class="control-button self-center cursor-pointer"
         :class="{ disabled: !state?.navigation?.canGoBack }"
         :disabled="!state?.navigation?.canGoBack"
@@ -56,15 +58,15 @@
         <template v-if="!isDarwin">
           <div class="w-px h-6 bg-gray-600"></div>
           <div class="flex items-center space-x-1">
-            <div class="control-button" @click="onMin">
+            <button aria-label="Minimize" title="Minimize" class="control-button" @click="onMin">
               <MinIcon />
-            </div>
-            <div class="control-button" @click="onMax">
+            </button>
+            <button aria-label="Maximize" title="Maximize" class="control-button" @click="onMax">
               <MaxIcon />
-            </div>
-            <div class="control-button control-button-danger" @click="onClose">
+            </button>
+            <button aria-label="Close" title="Close" class="control-button control-button-danger" @click="onClose">
               <CloseIcon />
-            </div>
+            </button>
           </div>
         </template>
       </div>

@@ -1,6 +1,8 @@
 <template>
   <div class="flex flex-row items-center space-x-2">
-    <button :class="{
+    <button aria-label="LastFM Integration"
+            title="LastFM Integration"
+            :class="{
       'control-button relative h-4': true,
       'opacity-70 btn-disabled': lastFMLoading,
       [lastFM.name ? '!w-auto flex space-x-2.5 items-center px-1.5 ' : 'w-4']: true,
@@ -23,11 +25,15 @@
             :class="{ 'text-gray-100 text-sm': true }">{{ lastFM.name }}</span>
     </button>
     <button v-if="!isHome"
+            aria-label="Go to Home"
+            title="Go to Home"
             class="control-button relative w-4 h-4"
             @click="() => action('nav.same-origin')">
       <HomeIcon></HomeIcon>
     </button>
-    <button class="control-button relative w-4 h-4"
+    <button aria-label="Check for Updates"
+            title="Check for Updates"
+            class="control-button relative w-4 h-4"
             :class="{ disabled: updateChecking }"
             :disabled="updateChecking"
             @click="() => checkUpdate()">
@@ -38,18 +44,24 @@
       <RefreshIcon v-else></RefreshIcon>
     </button>
     <button v-if="isDev"
+            aria-label="Developer Tools"
+            title="Developer Tools"
             class="control-button relative w-4 h-4"
             @click="() => action('app.devTools')">
       <DevIcon></DevIcon>
     </button>
-    <button class="control-button relative w-4 h-4"
+    <button aria-label="Toggle Mini Player"
+            title="Toggle Mini Player"
+            class="control-button relative w-4 h-4"
             :disabled="!playState"
             :class="miniPlayer ? { 'opacity-100': miniPlayer?.active, 'opacity-70': !miniPlayer?.active } : {}
               "
             @click="() => action('app.miniPlayer')">
       <MiniPlayerIcon />
     </button>
-    <button class="control-button relative"
+    <button aria-label="Toggle Discord RPC"
+            title="Toggle Discord RPC"
+            class="control-button relative"
             @click="() => toggleSetting('discord.enabled')">
       <RPCIcon :class="{ 'text-red-500': discordConnectionError && discordEnabled, 'opacity-100': discordEnabled || discordConnectionError, 'opacity-70': !discordEnabled || discordLoading }"></RPCIcon>
       <div v-if="discordConnected && !discordConnectionError && !discordLoading"
@@ -70,7 +82,9 @@
         <Spinner size="sm" />
       </div>
     </button>
-    <button class="control-button"
+    <button aria-label="Settings"
+            title="Settings"
+            class="control-button"
             @click="onSettings">
       <svg xmlns="http://www.w3.org/2000/svg"
            viewBox="0 0 20 20"
