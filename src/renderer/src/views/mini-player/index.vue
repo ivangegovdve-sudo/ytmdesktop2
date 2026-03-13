@@ -402,16 +402,24 @@ const playing = computed(() => {
   return !!playState.value?.playing;
 });
 
+const trackDuration = computed((): [string, number] | null => {
+  const { duration } = playState.value ?? {};
+  if (typeof duration !== "number") return null;
+  return (({ hours, minutes, seconds }) => createInterval([hours, minutes, seconds]))(
+    intervalToDuration({ start: 0, end: duration * 1000 })
+  ) as [string, number];
+});
+
 const time = computed((): [string, string, number] => {
   const { duration, progress } = playState.value ?? {};
-  if (typeof duration !== "number" || typeof progress !== "number") return null;
+  if (typeof duration !== "number" || typeof progress !== "number" || !trackDuration.value) return null;
   const [current] = (({ hours, minutes, seconds }) => createInterval([hours, minutes, seconds]))(
     intervalToDuration({
       start: duration * 1000 - (progress > duration ? duration : Math.floor(progress)) * 1000,
       end: duration * 1000,
     }),
   );
-  const [end, endPad] = (({ hours, minutes, seconds }) => createInterval([hours, minutes, seconds]))(intervalToDuration({ start: 0, end: duration * 1000 })) as [string, number];
+  const [end, endPad] = trackDuration.value;
   const timePad = endPad * 2;
   const percentage = ((progress > duration ? duration : progress) / duration) * 100;
   return [current.padEnd(timePad), end.padStart(timePad), percentage];
