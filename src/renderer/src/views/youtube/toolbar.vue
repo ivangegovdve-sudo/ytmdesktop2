@@ -8,6 +8,7 @@
         class="control-button self-center cursor-pointer"
         :class="{ disabled: !state?.navigation?.canGoBack }"
         :disabled="!state?.navigation?.canGoBack"
+        aria-label="Go Back"
         @click="onGoBack"
       >
         <ArrowLeftIcon />
@@ -38,6 +39,7 @@
               'bg-green-500 text-white': updateInfo && !updateInfoProgress && !updateDownloaded,
               'text-green-500': updateDownloaded,
             }"
+            aria-label="Update Application"
             @click="() => runUpdate()"
           >
             <template v-if="updateInfoProgress?.percent">
@@ -56,13 +58,13 @@
         <template v-if="!isDarwin">
           <div class="w-px h-6 bg-gray-600"></div>
           <div class="flex items-center space-x-1">
-            <div class="control-button" @click="onMin">
+            <div class="control-button" aria-label="Minimize Window" role="button" @click="onMin">
               <MinIcon />
             </div>
-            <div class="control-button" @click="onMax">
+            <div class="control-button" aria-label="Maximize Window" role="button" @click="onMax">
               <MaxIcon />
             </div>
-            <div class="control-button control-button-danger" @click="onClose">
+            <div class="control-button control-button-danger" aria-label="Close Window" role="button" @click="onClose">
               <CloseIcon />
             </div>
           </div>
