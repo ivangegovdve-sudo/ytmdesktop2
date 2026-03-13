@@ -32,7 +32,7 @@ export const createView = async <T extends WebContentsView>(
 	const view = new WebContentsView({
 		webPreferences: {
 			disableHtmlFullscreenWindowResize: true,
-			nodeIntegration: true,
+			nodeIntegration: false,
 			sandbox: false,
 			webSecurity: isProduction,
 			allowRunningInsecureContent: !isProduction,
@@ -53,7 +53,7 @@ export const createPopup = async (options?: BrowserWindowConstructorOptions) => 
 		...(options ? options : {}),
 		webPreferences: {
 			disableHtmlFullscreenWindowResize: true,
-			nodeIntegration: true,
+			nodeIntegration: false,
 			sandbox: false,
 			webSecurity: isProduction,
 			contextIsolation: false, // window object is required to be rewritten for tracking current track
