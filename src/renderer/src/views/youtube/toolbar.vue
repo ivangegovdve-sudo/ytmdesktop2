@@ -9,6 +9,8 @@
         :class="{ disabled: !state?.navigation?.canGoBack }"
         :disabled="!state?.navigation?.canGoBack"
         @click="onGoBack"
+        aria-label="Go Back"
+        title="Go Back"
       >
         <ArrowLeftIcon />
       </button>
