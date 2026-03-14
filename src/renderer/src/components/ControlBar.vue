@@ -22,16 +22,31 @@
       </slot>
       <div class="flex items-center space-x-1">
         <template v-if="!isMac">
-          <div v-if="state?.minimizable" class="control-button" @click="onMin">
+          <button
+            v-if="state?.minimizable"
+            class="control-button"
+            aria-label="Minimize"
+            @click="onMin"
+          >
             <MinIcon />
-          </div>
-          <div v-if="state?.maximizable" class="control-button" @click="onMax">
+          </button>
+          <button
+            v-if="state?.maximizable"
+            class="control-button"
+            aria-label="Maximize"
+            @click="onMax"
+          >
             <MaxIcon />
-          </div>
+          </button>
         </template>
-        <div v-if="showClose" class="control-button control-button-danger" @click="onClose">
+        <button
+          v-if="showClose"
+          class="control-button control-button-danger"
+          aria-label="Close"
+          @click="onClose"
+        >
           <CloseIcon />
-        </div>
+        </button>
       </div>
     </div>
   </div>
@@ -45,33 +60,33 @@ import { refWindowState } from "@shared/utils/Ipc";
 import { computed } from "vue";
 type ControlType = "close" | "maximize" | "minimize";
 const props = defineProps({
-	title: String,
-	controls: {
-		type: Object,
-		default: null,
-		required: false,
-	},
+  title: String,
+  controls: {
+    type: Object,
+    default: null,
+    required: false,
+  },
 });
 const isMac = computed(() => window.process.platform === "darwin");
 const showMin = computed(() => {
-	const { controls } = props || {};
-	if (!controls) return true;
-	return !!controls.find((x) => x === "minimize");
+  const { controls } = props || {};
+  if (!controls) return true;
+  return !!controls.find((x) => x === "minimize");
 });
 const showClose = computed(() => {
-	const { controls } = props || {};
-	if (!controls) return true;
-	return !!controls.find((x) => x === "close");
+  const { controls } = props || {};
+  if (!controls) return true;
+  return !!controls.find((x) => x === "close");
 });
 const [state] = refWindowState();
 function onClose() {
-	window.api.closeWindow();
+  window.api.closeWindow();
 }
 function onMax() {
-	window.api.maximize();
+  window.api.maximize();
 }
 function onMin() {
-	window.api.minimize();
+  window.api.minimize();
 }
 </script>
 <style lang="scss"></style>

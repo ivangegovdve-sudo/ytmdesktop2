@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full overflow-hidden" ref="root">
+  <div ref="root" class="h-full overflow-hidden">
     <div
       class="flex items-stretch justify-between border-b bg-black border-gray-600 select-none h-10 px-2 space-x-2"
       :class="{ 'pl-20': window.api.platform.isMacOS }"
@@ -8,6 +8,7 @@
         class="control-button self-center cursor-pointer"
         :class="{ disabled: !state?.navigation?.canGoBack }"
         :disabled="!state?.navigation?.canGoBack"
+        aria-label="Go Back"
         @click="onGoBack"
       >
         <ArrowLeftIcon />
@@ -56,15 +57,19 @@
         <template v-if="!isDarwin">
           <div class="w-px h-6 bg-gray-600"></div>
           <div class="flex items-center space-x-1">
-            <div class="control-button" @click="onMin">
+            <button class="control-button" aria-label="Minimize" @click="onMin">
               <MinIcon />
-            </div>
-            <div class="control-button" @click="onMax">
+            </button>
+            <button class="control-button" aria-label="Maximize" @click="onMax">
               <MaxIcon />
-            </div>
-            <div class="control-button control-button-danger" @click="onClose">
+            </button>
+            <button
+              class="control-button control-button-danger"
+              aria-label="Close"
+              @click="onClose"
+            >
               <CloseIcon />
-            </div>
+            </button>
           </div>
         </template>
       </div>
@@ -74,50 +79,53 @@
 <script setup lang="ts">
 import Spinner from "@renderer/components/Spinner.vue";
 import { refIpc, refMainWindowState } from "@shared/utils/Ipc";
-import { ArrowLeftIcon, XIcon as CloseIcon, MaximizeIcon as MaxIcon, Minimize2 as MinIcon } from "lucide-vue-next";
+import {
+  ArrowLeftIcon,
+  XIcon as CloseIcon,
+  MaximizeIcon as MaxIcon,
+  Minimize2 as MinIcon,
+} from "lucide-vue-next";
 import { ref } from "vue";
 import ToolbarOptions from "./toolbar-options.vue";
 const appVersion = ref(window.api.version);
 const isDarwin = ref(window.process.platform === "darwin");
 const [state] = refMainWindowState();
 const [title] = refIpc("TRACK_TITLE_CHANGE", {
-	ignoreUndefined: true,
-	defaultValue: null,
+  ignoreUndefined: true,
+  defaultValue: null,
 });
 const [updateInfo, setUpdateInfo] = refIpc("APP_UPDATE", {
-	ignoreUndefined: true,
-	defaultValue: null,
+  ignoreUndefined: true,
+  defaultValue: null,
 });
 const [updateInfoProgress] = refIpc("APP_UPDATE_PROGRESS", {
-	ignoreUndefined: true,
-	defaultValue: null,
+  ignoreUndefined: true,
+  defaultValue: null,
 });
 const [updateDownloaded] = refIpc("APP_UPDATE_DOWNLOADED", {
-	ignoreUndefined: true,
-	defaultValue: null,
-	mapper: (x) => !!x,
+  ignoreUndefined: true,
+  defaultValue: null,
+  mapper: (x) => !!x,
 });
 const isInstalling = ref(false);
 function runUpdate() {
-	if (isInstalling.value) return Promise.resolve(null);
-	isInstalling.value = true;
-	return window.api
-		.action("app.checkUpdate")
-		.finally(() => {
-			isInstalling.value = false;
-		});
+  if (isInstalling.value) return Promise.resolve(null);
+  isInstalling.value = true;
+  return window.api.action("app.checkUpdate").finally(() => {
+    isInstalling.value = false;
+  });
 }
 function onClose() {
-	window.api.quit();
+  window.api.quit();
 }
 function onMax() {
-	window.api.maximize();
+  window.api.maximize();
 }
 function onMin() {
-	window.api.minimize();
+  window.api.minimize();
 }
 function onGoBack() {
-	window.api.goback();
+  window.api.goback();
 }
 const root = ref<HTMLElement>();
 // onMounted(() => {
