@@ -8,6 +8,7 @@
         class="control-button self-center cursor-pointer"
         :class="{ disabled: !state?.navigation?.canGoBack }"
         :disabled="!state?.navigation?.canGoBack"
+        aria-label="Go Back"
         @click="onGoBack"
       >
         <ArrowLeftIcon />
@@ -56,15 +57,15 @@
         <template v-if="!isDarwin">
           <div class="w-px h-6 bg-gray-600"></div>
           <div class="flex items-center space-x-1">
-            <div class="control-button" @click="onMin">
+            <button class="control-button" aria-label="Minimize" @click="onMin">
               <MinIcon />
-            </div>
-            <div class="control-button" @click="onMax">
+            </button>
+            <button class="control-button" aria-label="Maximize" @click="onMax">
               <MaxIcon />
-            </div>
-            <div class="control-button control-button-danger" @click="onClose">
+            </button>
+            <button class="control-button control-button-danger" aria-label="Close" @click="onClose">
               <CloseIcon />
-            </div>
+            </button>
           </div>
         </template>
       </div>
