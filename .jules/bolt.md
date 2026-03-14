@@ -1,0 +1,3 @@
+## 2024-05-18 - [Vue Reactivity Overhead from IPC Payloads]
+**Learning:** In Electron + Vue apps, IPC payloads passed to reactive `ref`s (like `windowState` or `APP_UPDATE_PROGRESS` events) frequently provide new object references even when their structural contents remain unchanged. This triggers extensive Vue component tree re-renders because Vue reacts to the new object reference.
+**Action:** When bridging IPC state to Vue refs via functions like `refIpc`, always use a deep equality check (e.g., `lodash.isEqual`) to compare the incoming payload to the existing `ref.value`. Early returning when `isEqual` is true prevents redundant reactivity updates and drastically improves UI performance.
