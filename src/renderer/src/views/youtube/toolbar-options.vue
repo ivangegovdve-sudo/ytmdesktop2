@@ -24,12 +24,16 @@
     </button>
     <button v-if="!isHome"
             class="control-button relative w-4 h-4"
+            aria-label="Home"
+            title="Home"
             @click="() => action('nav.same-origin')">
       <HomeIcon></HomeIcon>
     </button>
     <button class="control-button relative w-4 h-4"
             :class="{ disabled: updateChecking }"
             :disabled="updateChecking"
+            aria-label="Check for updates"
+            title="Check for updates"
             @click="() => checkUpdate()">
       <Spinner v-if="updateChecking && !updateInfo"
                size="sm" />
@@ -39,6 +43,8 @@
     </button>
     <button v-if="isDev"
             class="control-button relative w-4 h-4"
+            aria-label="Developer tools"
+            title="Developer tools"
             @click="() => action('app.devTools')">
       <DevIcon></DevIcon>
     </button>
@@ -46,10 +52,14 @@
             :disabled="!playState"
             :class="miniPlayer ? { 'opacity-100': miniPlayer?.active, 'opacity-70': !miniPlayer?.active } : {}
               "
+            aria-label="Toggle mini player"
+            title="Toggle mini player"
             @click="() => action('app.miniPlayer')">
       <MiniPlayerIcon />
     </button>
     <button class="control-button relative"
+            aria-label="Toggle Discord Rich Presence"
+            title="Toggle Discord Rich Presence"
             @click="() => toggleSetting('discord.enabled')">
       <RPCIcon :class="{ 'text-red-500': discordConnectionError && discordEnabled, 'opacity-100': discordEnabled || discordConnectionError, 'opacity-70': !discordEnabled || discordLoading }"></RPCIcon>
       <div v-if="discordConnected && !discordConnectionError && !discordLoading"
@@ -71,6 +81,8 @@
       </div>
     </button>
     <button class="control-button"
+            aria-label="Settings"
+            title="Settings"
             @click="onSettings">
       <svg xmlns="http://www.w3.org/2000/svg"
            viewBox="0 0 20 20"

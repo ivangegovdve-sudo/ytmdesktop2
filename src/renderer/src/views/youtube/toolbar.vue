@@ -8,6 +8,8 @@
         class="control-button self-center cursor-pointer"
         :class="{ disabled: !state?.navigation?.canGoBack }"
         :disabled="!state?.navigation?.canGoBack"
+        aria-label="Go back"
+        title="Go back"
         @click="onGoBack"
       >
         <ArrowLeftIcon />
