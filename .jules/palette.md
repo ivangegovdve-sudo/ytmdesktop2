@@ -1,0 +1,3 @@
+## 2024-03-16 - [Button Accessibility and Semantics in Window Controls]
+**Learning:** Found an accessibility issue pattern where critical OS-level window controls (Minimize, Maximize, Close) in `ControlBar.vue` and `toolbar.vue` were implemented as `div` tags instead of `button` tags and lacked any `aria-label` or `title` attributes. Icon-only action buttons in `toolbar-options.vue` also lacked accessible names. Screen reader users would have zero context on what these critical app controls do.
+**Action:** Always use semantic `<button>` tags for interactive actions and ensure all icon-only buttons receive descriptive `aria-label` and `title` attributes (the latter helps sighted users too via tooltips).

@@ -6,6 +6,8 @@
     >
       <button
         class="control-button self-center cursor-pointer"
+        aria-label="Go Back"
+        title="Go Back"
         :class="{ disabled: !state?.navigation?.canGoBack }"
         :disabled="!state?.navigation?.canGoBack"
         @click="onGoBack"
@@ -56,15 +58,15 @@
         <template v-if="!isDarwin">
           <div class="w-px h-6 bg-gray-600"></div>
           <div class="flex items-center space-x-1">
-            <div class="control-button" @click="onMin">
+            <button class="control-button" aria-label="Minimize Window" title="Minimize Window" @click="onMin">
               <MinIcon />
-            </div>
-            <div class="control-button" @click="onMax">
+            </button>
+            <button class="control-button" aria-label="Maximize Window" title="Maximize Window" @click="onMax">
               <MaxIcon />
-            </div>
-            <div class="control-button control-button-danger" @click="onClose">
+            </button>
+            <button class="control-button control-button-danger" aria-label="Close Window" title="Close Window" @click="onClose">
               <CloseIcon />
-            </div>
+            </button>
           </div>
         </template>
       </div>
