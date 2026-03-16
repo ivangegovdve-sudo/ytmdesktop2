@@ -20,6 +20,8 @@ const GLOB_PATTERNS = {
 export abstract class BaseCollection<T extends CollectionItem> {
 	protected items: T[] = [];
 	protected logger = logger.child(this.constructor.name);
+	private _itemsMap: Map<string, T> = new Map();
+	private _cachedNames: string[] = [];
 
 	constructor(protected readonly app: App) {}
 
@@ -33,14 +35,30 @@ export abstract class BaseCollection<T extends CollectionItem> {
 			.map((m: any) => m.default)
 			.filter(Boolean)
 			.map((item: any) => new item(this.app));
+
+		// ⚡ Bolt: Cache provider names and build an O(1) lookup map to optimize getProvider calls.
+		// Replaces O(n) array traversals with constant-time Map lookups for frequently accessed services.
+		this._itemsMap.clear();
+		this._cachedNames = [];
+		this.items.forEach((item) => {
+			const name = item.getName?.() ?? item.eventName ?? "";
+			this._cachedNames.push(name);
+			// Array.find returns the FIRST match, so we only set in Map if it doesn't exist yet
+			if (name && !this._itemsMap.has(name)) {
+				this._itemsMap.set(name, item);
+			}
+			if (item.eventName && item.eventName !== name && !this._itemsMap.has(item.eventName)) {
+				this._itemsMap.set(item.eventName, item);
+			}
+		});
 	}
 
 	getProviderNames(): string[] {
-		return this.items.map((x) => x.getName?.() ?? x.eventName ?? "");
+		return this._cachedNames;
 	}
 
 	getProvider<K extends string>(name: K): T | undefined {
-		return this.items.find((x) => x.getName?.() === name || x.eventName === name);
+		return this._itemsMap.get(name);
 	}
 
 	protected async executeMethod(methodName: string, ...args: any[]): Promise<any[]> {
