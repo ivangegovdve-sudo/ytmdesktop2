@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full overflow-hidden" ref="root">
+  <div class="h-full overflow-hidden">
     <div
       class="flex items-stretch justify-between border-b bg-black border-gray-600 select-none h-10 px-2 space-x-2"
       :class="{ 'pl-20': window.api.platform.isMacOS }"
@@ -119,10 +119,6 @@ function onMin() {
 function onGoBack() {
 	window.api.goback();
 }
-const root = ref<HTMLElement>();
-// onMounted(() => {
-//   if (root) window.domUtils.setInteractiveElements([root.value]);
-// })
 </script>
 <style lang="scss">
 html,
