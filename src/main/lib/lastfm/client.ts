@@ -49,13 +49,6 @@ export class LastFMClient {
 	) {
 		const query = Object.assign({}, payload.query || {}, { method });
 		const searchParams = new URLSearchParams(query);
-		// const request = this.client
-		//   .extend({ method: type })[type.toLowerCase()] as GotRequestFunction;
-		// return await request('', {
-		//   ...(payload.body ? {body: JSON.stringify(payload.body)} : {}),
-		//   searchParams: new URLSearchParams(query)
-		// })
-		//   .json<T>()
 
 		searchParams.set("api_key", this.key.api);
 		if (this.token) {
