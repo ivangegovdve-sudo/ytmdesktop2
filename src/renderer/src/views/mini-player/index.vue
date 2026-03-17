@@ -310,61 +310,41 @@ const getCurrentAccent = (retry: number = 0) => {
     if (!clr) accentHandle = setTimeout(getCurrentAccent.bind(this, retry + 1), 500);
   });
 };
-function next() {
-  trackBusy.value = true;
-  return window.ipcRenderer
-    .invoke("api/track/next")
-    .finally(() => {
-      trackBusy.value = false;
-    })
-    .then(() => {
+function invokeAction(channel: string, payload?: any, options?: { resetProgress?: boolean, busy?: boolean }) {
+  const { resetProgress = false, busy = true } = options || {};
+  if (busy) trackBusy.value = true;
+  return window.ipcRenderer.invoke(channel, payload).finally(() => {
+    if (busy) trackBusy.value = false;
+    if (resetProgress && playState.value) {
       playState.value.progress = 0;
-    });
+    }
+  });
+}
+function next() {
+  return invokeAction("api/track/next", undefined, { resetProgress: true });
 }
 function prev() {
-  trackBusy.value = true;
-  return window.ipcRenderer.invoke("api/track/prev").finally(() => {
-    trackBusy.value = false;
-    playState.value.progress = 0;
-  });
+  return invokeAction("api/track/prev", undefined, { resetProgress: true });
 }
 function forward(time = 10000) {
-  trackBusy.value = true;
-  return window.ipcRenderer.invoke("api/track/forward", { time }).finally(() => {
-    trackBusy.value = false;
-  });
+  return invokeAction("api/track/forward", { time });
 }
 function backward(time = 10000) {
-  trackBusy.value = true;
-  return window.ipcRenderer.invoke("api/track/backward", { time }).finally(() => {
-    trackBusy.value = false;
-  });
+  return invokeAction("api/track/backward", { time });
 }
 function pause() {
-  // trackBusy.value = true;
-  return window.ipcRenderer.invoke("api/track/pause").finally(() => {
-    // trackBusy.value = false;
-  });
+  return invokeAction("api/track/pause", undefined, { busy: false });
 }
 function play() {
-  // trackBusy.value = true;
-  return window.ipcRenderer.invoke("api/track/play").finally(() => {
-    // trackBusy.value = false;
-  });
+  return invokeAction("api/track/play", undefined, { busy: false });
 }
 function dislikeToggle() {
   if (typeof playState.value?.disliked !== "boolean") return;
-  trackBusy.value = true;
-  return window.ipcRenderer.invoke("api/track/dislike", !playState.value.disliked).finally(() => {
-    trackBusy.value = false;
-  });
+  return invokeAction("api/track/dislike", !playState.value.disliked);
 }
 function likeToggle() {
   if (typeof playState.value?.liked !== "boolean") return;
-  trackBusy.value = true;
-  return window.ipcRenderer.invoke("api/track/like", !playState.value.liked).finally(() => {
-    trackBusy.value = false;
-  });
+  return invokeAction("api/track/like", !playState.value.liked);
 }
 function handleAccent(ev: Parameters<HTMLImageElement["onload"]>[0]) {
   const src = (ev.target as HTMLImageElement).src;
@@ -384,10 +364,7 @@ function setCurrentTime(ev: MouseEvent) {
     value: seekTime / 1000,
     duration,
   });
-  trackBusy.value = true;
-  return window.ipcRenderer.invoke("api/track/seek", { time: seekTime, type: "seek" }).finally(() => {
-    trackBusy.value = false;
-  });
+  return invokeAction("api/track/seek", { time: seekTime, type: "seek" });
 }
 async function toggleStayTop() {
   const result = await window.api.action("miniplayer.stayOnTop");
