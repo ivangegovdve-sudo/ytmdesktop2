@@ -23,7 +23,8 @@
     "biome:lint": "biome lint ./src",
     "biome:format": "biome format ./src --write",
     "biome:check": "biome check ./src",
-    "biome:check:apply": "biome check ./src --write"
+    "biome:check:apply": "biome check ./src --write",
+    "test": "vitest run"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",
