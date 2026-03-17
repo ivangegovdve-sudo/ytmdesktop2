@@ -245,18 +245,18 @@ import Spinner from "@renderer/components/Spinner.vue";
 import { refLastFM } from "@renderer/lib/lastfm";
 import { refIpc, refWindowState } from "@shared/utils/Ipc";
 import { logger } from "@shared/utils/console";
-import { intervalToDuration } from "date-fns";
 import { clamp } from "lodash-es";
 import { AlertCircleIcon, CheckIcon } from "lucide-vue-next";
 import { computed, onMounted, ref, watch } from "vue";
 const zeroPad = (num) => String(num).padStart(2, "0");
-const createInterval = (dts: number[]): [string, number] => [
-  dts
-    .filter((p, i) => (i === 0 ? Boolean(p) : true))
-    .map(zeroPad)
-    .join(":"),
-  dts.length,
-];
+
+const formatSeconds = (totalSeconds: number): [string, number] => {
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = Math.floor(totalSeconds % 60);
+  if (h > 0) return [`${zeroPad(h)}:${zeroPad(m)}:${zeroPad(s)}`, 3];
+  return [`${zeroPad(m)}:${zeroPad(s)}`, 2];
+};
 
 const [track, setTrack] = refIpc<TrackData>("TRACK_CHANGE", {
   ignoreUndefined: true,
@@ -405,13 +405,9 @@ const playing = computed(() => {
 const time = computed((): [string, string, number] => {
   const { duration, progress } = playState.value ?? {};
   if (typeof duration !== "number" || typeof progress !== "number") return null;
-  const [current] = (({ hours, minutes, seconds }) => createInterval([hours, minutes, seconds]))(
-    intervalToDuration({
-      start: duration * 1000 - (progress > duration ? duration : Math.floor(progress)) * 1000,
-      end: duration * 1000,
-    }),
-  );
-  const [end, endPad] = (({ hours, minutes, seconds }) => createInterval([hours, minutes, seconds]))(intervalToDuration({ start: 0, end: duration * 1000 })) as [string, number];
+  const currentSeconds = (progress > duration ? duration : Math.floor(progress));
+  const [current] = formatSeconds(currentSeconds);
+  const [end, endPad] = formatSeconds(duration);
   const timePad = endPad * 2;
   const percentage = ((progress > duration ? duration : progress) / duration) * 100;
   return [current.padEnd(timePad), end.padStart(timePad), percentage];
