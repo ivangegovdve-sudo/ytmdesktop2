@@ -15,35 +15,43 @@ interface IpcContextEvent {
 		debug?: boolean;
 	};
 }
-export function IpcContextWithOptions() {
-	return IpcContext; // todo: add options to ipc base to allow setting prefixes to events
+export interface IpcContextOptions {
+	prefix?: string;
 }
-export function IpcContext<T extends { new (...args: any[]): {} }>(IpcContextBase: T) {
-	return class extends IpcContextBase {
-		public get __registeredIpcEvents() {
-			return this[Object.getOwnPropertySymbols(this)[0]]?.values?.();
-		}
-		constructor(...args: any[]) {
-			super(...args);
-			const symbols: any = IpcContextBase.prototype[classIpcStoreSymbol];
-			if (symbols) {
-				symbols.forEach(({ name, type, options }: IpcContextEvent, method: string) => {
-					const log = createLogger("IPC").child(`${name}:ipc.${type ?? "on"}`);
-					const func = (...args: any[]) => {
-						if (options?.debug) log.debug(`hit, payload size: ${new Blob([stringifyJson(args ?? null)]).size} bytes`);
-						if (
-							typeof (this as any)[method] === "function" &&
-							(options && options.filter && typeof options.filter === "function" ? options.filter(args[0], ...args.slice(1)) : true)
-						) {
-							return type === "handle" ? Promise.resolve((this as any)[method](...args)) : (this as any)[method](...args);
-						}
-						return Promise.resolve(null);
-					};
-					serverMain[type === "once" ? "once" : type === "handle" ? "handle" : "on"](name, options && options.debounce ? debounce(func, options.debounce) : func);
-				});
+
+export function IpcContextWithOptions(contextOptions?: IpcContextOptions) {
+	return function <T extends { new (...args: any[]): {} }>(IpcContextBase: T) {
+		return class extends IpcContextBase {
+			public get __registeredIpcEvents() {
+				return this[Object.getOwnPropertySymbols(this)[0]]?.values?.();
 			}
-		}
+			constructor(...args: any[]) {
+				super(...args);
+				const symbols: any = IpcContextBase.prototype[classIpcStoreSymbol];
+				if (symbols) {
+					symbols.forEach(({ name, type, options }: IpcContextEvent, method: string) => {
+						const eventName = contextOptions?.prefix ? `${contextOptions.prefix}${name}` : name;
+						const log = createLogger("IPC").child(`${eventName}:ipc.${type ?? "on"}`);
+						const func = (...args: any[]) => {
+							if (options?.debug) log.debug(`hit, payload size: ${new Blob([stringifyJson(args ?? null)]).size} bytes`);
+							if (
+								typeof (this as any)[method] === "function" &&
+								(options && options.filter && typeof options.filter === "function" ? options.filter(args[0], ...args.slice(1)) : true)
+							) {
+								return type === "handle" ? Promise.resolve((this as any)[method](...args)) : (this as any)[method](...args);
+							}
+							return Promise.resolve(null);
+						};
+						serverMain[type === "once" ? "once" : type === "handle" ? "handle" : "on"](eventName, options && options.debounce ? debounce(func, options.debounce) : func);
+					});
+				}
+			}
+		};
 	};
+}
+
+export function IpcContext<T extends { new (...args: any[]): {} }>(IpcContextBase: T) {
+	return IpcContextWithOptions()(IpcContextBase);
 }
 
 export function IpcOnce(event: string): MethodDecorator {
