@@ -12,7 +12,6 @@ export default definePlugin(
 		let isEnabled = !!res?.enabled;
 		let currentQuality = res?.prefer;
 		function setQuality(quality) {
-			console.log(quality);
 			if (!quality || quality === "auto") return localStorage.removeItem(qKey);
 			const tc = Date.now(),
 				te = tc + 2592000000;

@@ -2,8 +2,6 @@ import { ApiWorker, createApiWorker } from "@main/api/createApiWorker";
 import { AfterInit, BaseProvider } from "@main/utils/baseProvider";
 import { IpcContext, IpcHandle, IpcOn } from "@main/utils/onIpcEvent";
 import { type App, ipcMain } from "electron";
-import fetch from "node-fetch";
-import Vibrant from "node-vibrant";
 
 import IPC_EVENT_NAMES, { API_ROUTES } from "../utils/eventNames";
 import TrackProvider from "./track.service";
@@ -11,7 +9,6 @@ import TrackProvider from "./track.service";
 @IpcContext
 export default class ApiProvider extends BaseProvider implements AfterInit {
 	private _thread?: ApiWorker;
-	private _currentPallete: { id: string; color: string } | null = null;
 
 	constructor(private _app: App) {
 		super("api");
@@ -81,24 +78,7 @@ export default class ApiProvider extends BaseProvider implements AfterInit {
 
 	@IpcHandle(API_ROUTES.TRACK_ACCENT)
 	async getTrackAccent() {
-		const track = await this.getTrackInformation();
-		if (!track?.video?.thumbnail?.thumbnails?.[0]?.url) return null;
-
-		const videoId = track.video.videoId;
-		if (this._currentPallete?.id === videoId) return this._currentPallete.color;
-
-		const color = await fetch(track.video.thumbnail.thumbnails[0].url)
-			.then((th) => th.buffer())
-			.then((file) => Vibrant.from(file))
-			.then((clr) => clr.getPalette())
-			.then((clr) => clr.Vibrant?.hex)
-			.catch((err) => {
-				this.logger.error("Error extracting accent color:", err);
-				return null;
-			});
-
-		if (color) this._currentPallete = { id: videoId, color };
-		return color;
+		return await (this.getProvider("track") as TrackProvider)?.getTrackAccent();
 	}
 
 	@IpcHandle(API_ROUTES.TRACK_LIKE)

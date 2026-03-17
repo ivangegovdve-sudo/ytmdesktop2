@@ -32,7 +32,7 @@ const runApp = async function () {
 			scheme: "http",
 			privileges: {
 				standard: true,
-				bypassCSP: true,
+
 				allowServiceWorkers: true,
 				supportFetchAPI: true,
 				corsEnabled: true,
@@ -44,7 +44,7 @@ const runApp = async function () {
 			scheme: "https",
 			privileges: {
 				standard: true,
-				bypassCSP: true,
+
 				allowServiceWorkers: true,
 				supportFetchAPI: true,
 				corsEnabled: true,

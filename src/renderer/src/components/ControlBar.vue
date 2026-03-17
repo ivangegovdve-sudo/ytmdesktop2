@@ -22,16 +22,16 @@
       </slot>
       <div class="flex items-center space-x-1">
         <template v-if="!isMac">
-          <div v-if="state?.minimizable" class="control-button" @click="onMin">
+          <button v-if="state?.minimizable" aria-label="Minimize" title="Minimize" class="control-button" @click="onMin">
             <MinIcon />
-          </div>
-          <div v-if="state?.maximizable" class="control-button" @click="onMax">
+          </button>
+          <button v-if="state?.maximizable" aria-label="Maximize" title="Maximize" class="control-button" @click="onMax">
             <MaxIcon />
-          </div>
+          </button>
         </template>
-        <div v-if="showClose" class="control-button control-button-danger" @click="onClose">
+        <button v-if="showClose" aria-label="Close" title="Close" class="control-button control-button-danger" @click="onClose">
           <CloseIcon />
-        </div>
+        </button>
       </div>
     </div>
   </div>
