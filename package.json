@@ -96,6 +96,8 @@
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
     "@vitejs/plugin-vue": "^5.1.4",
+    "@vitest/coverage-v8": "^4.1.0",
+    "@vitest/ui": "^4.1.0",
     "@vue/compiler-sfc": "^3.2.37",
     "@vue/eslint-config-prettier": "^9.0.0",
     "@vue/eslint-config-typescript": "^13.0.0",
@@ -124,6 +126,7 @@
     "typescript": "^5.6.3",
     "vite": "^6.3.5",
     "vite-svg-loader": "^5.1.0",
+    "vitest": "^4.1.0",
     "vue-svg-loader": "^0.17.0-beta.2",
     "vue-tsc": "^2.1.10",
     "webpack-node-externals": "^3.0.0"
