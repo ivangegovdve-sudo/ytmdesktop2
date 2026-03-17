@@ -1,4 +1,70 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("electron", () => ({
+  BrowserWindow: class {},
+  WebContentsView: class {},
+}));
+
+vi.mock("@shared/utils/console", () => ({
+  logger: {
+    child: vi.fn(() => ({
+      debug: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+    })),
+    debug: vi.fn(),
+    error: vi.fn(),
+    info: vi.fn(),
+  },
+}));
+
+vi.mock("@translations/index", () => ({
+  default: {
+    appName: "YouTube Music",
+  },
+}));
+
+vi.mock("lodash-es", () => ({
+  debounce: <T>(fn: T) => fn,
+}));
+
+vi.mock("~/build/favicon.ico?asset", () => ({
+  default: "",
+}));
+
+vi.mock("../devUtils", () => ({
+  defaultUrl: "https://music.youtube.com",
+  isDevelopment: false,
+  isProduction: false,
+}));
+
+vi.mock("../mappedWindow", () => ({
+  createWindowContext: vi.fn(),
+}));
+
+vi.mock("../serverEvents", () => ({
+  serverMain: {
+    emit: vi.fn(),
+    on: vi.fn(),
+    onServer: vi.fn(),
+  },
+}));
+
+vi.mock("../view", () => ({
+  createApiView: vi.fn(),
+  createView: vi.fn(),
+  googleLoginPopup: vi.fn(),
+}));
+
+vi.mock("../webContentUtils", () => ({
+  pushWindowStates: vi.fn(),
+}));
+
+vi.mock("../windowUtils", () => ({
+  getBoundsWithScaleFactor: vi.fn(),
+  wrapWindowHandler: vi.fn(),
+}));
+
 import { isPreventedNavOrRedirect, isGoogleLoginUrl } from "../windowManager";
 
 describe("isGoogleLoginUrl", () => {
