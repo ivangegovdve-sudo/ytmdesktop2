@@ -15,7 +15,7 @@ export function isGoogleLoginUrl(url: URL): boolean {
 }
 export function isPreventedNavOrRedirect(url: URL): boolean {
 	return (
-		/^(?!consent\.youtube\.com|accounts\.youtube\.com|music\.youtube\.com|accounts\.google\.\w+)$/.test(url.hostname) &&
+		/^(?!consent\.youtube\.com|accounts\.youtube\.com|music\.youtube\.com|accounts\.google\.\w+).*$/.test(url.hostname) &&
 		!/^(www\.youtube\.com|youtube\.com)\/(premium|musicpremium)$/i.test(url.hostname + url.pathname) &&
 		!url.hostname.match(/^accounts\.google\.(\w+)$/)
 	);
