@@ -410,7 +410,7 @@ const time = computed((): [string, string, number] => {
   const { duration, progress } = playState.value ?? {};
   if (typeof duration !== "number" || typeof progress !== "number") return null;
 
-  // ⚡ Bolt: Use math instead of intervalToDuration to avoid GC overhead in high-frequency computed
+  // Avoid intervalToDuration in this high-frequency computed path.
   const progressSeconds = progress > duration ? duration : Math.floor(progress);
   const [current] = formatDuration(progressSeconds);
   const [end, endPad] = formatDuration(duration);

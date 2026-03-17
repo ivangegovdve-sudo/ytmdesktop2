@@ -218,10 +218,10 @@ export default class CustomCSSProvider extends BaseProvider implements AfterInit
 		try {
 			if (!fs.existsSync(scssPath)) {
 				if (!fs.existsSync(scssParent)) {
-					fs.mkdirSync(scssParent, { recursive: true });
+					await fs.promises.mkdir(scssParent, { recursive: true });
 				}
 
-				fs.writeFileSync(scssPath, customDefaultCss);
+				await fs.promises.writeFile(scssPath, customDefaultCss);
 				this.logger.debug(`Created default SCSS file at ${scssPath}`);
 
 				// Update settings after creating the file

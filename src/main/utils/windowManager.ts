@@ -139,6 +139,7 @@ export class WindowManager {
 			{
 				sandbox: false,
 				contextIsolation: false,
+				nodeIntegration: false,
 			},
 		);
 	}
