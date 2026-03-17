@@ -1,0 +1,4 @@
+## 2024-05-09 - Global CSP Bypass via Privileged Schemes
+**Vulnerability:** The application was registering `http` and `https` protocols with `bypassCSP: true` in Electron's `protocol.registerSchemesAsPrivileged()`.
+**Learning:** Disabling Content Security Policy (CSP) globally for standard protocols (`http` and `https`) creates a critical risk. It opens the entire application to Cross-Site Scripting (XSS) vulnerabilities because any remote or local content loaded via these schemes will not be subject to CSP restrictions, potentially allowing arbitrary code execution in the context of the Electron app.
+**Prevention:** Never use `bypassCSP: true` when registering standard protocols like `http` and `https`. CSP should be strictly enforced. If a specific external resource needs to be loaded, it should be explicitly allowed within a properly configured Content Security Policy header or `<meta>` tag, rather than disabling CSP globally.
