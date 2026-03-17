@@ -19,6 +19,8 @@ const GLOB_PATTERNS = {
 } as const;
 export abstract class BaseCollection<T extends CollectionItem> {
 	protected items: T[] = [];
+	protected itemMap: Map<string, T> = new Map();
+	protected cachedNames: string[] = [];
 	protected logger = logger.child(this.constructor.name);
 
 	constructor(protected readonly app: App) {}
@@ -33,14 +35,29 @@ export abstract class BaseCollection<T extends CollectionItem> {
 			.map((m: any) => m.default)
 			.filter(Boolean)
 			.map((item: any) => new item(this.app));
+
+		// Iterate backwards so that if duplicates exist, the first item added (index 0)
+		// will overwrite the later items in the Map, matching the behavior of `.find()`
+		for (let i = this.items.length - 1; i >= 0; i--) {
+			const item = this.items[i];
+			const name = item.getName?.();
+			const eventName = item.eventName;
+
+			if (name !== undefined) this.itemMap.set(name, item);
+			if (eventName !== undefined) this.itemMap.set(eventName, item);
+		}
+
+		// Precompute cachedNames to avoid O(n) map on every getProviderNames() call
+		this.cachedNames = this.items.map((x) => x.getName?.() ?? x.eventName ?? "");
 	}
 
 	getProviderNames(): string[] {
-		return this.items.map((x) => x.getName?.() ?? x.eventName ?? "");
+		// Return a copy so callers cannot mutate the internal cache
+		return [...this.cachedNames];
 	}
 
 	getProvider<K extends string>(name: K): T | undefined {
-		return this.items.find((x) => x.getName?.() === name || x.eventName === name);
+		return this.itemMap.get(name);
 	}
 
 	protected async executeMethod(methodName: string, ...args: any[]): Promise<any[]> {
