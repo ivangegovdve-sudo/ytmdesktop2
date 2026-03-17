@@ -31,9 +31,6 @@ export class LastFMClient {
 							options.searchParams.set("api_sig", createHash("md5").update(requestSourceData).digest("hex"));
 						}
 						options.searchParams.set("format", "json");
-						console.log("[API::LASTFM@BeforeRequest]", options, "params:", {
-							...options.searchParams,
-						});
 					},
 				],
 			},
