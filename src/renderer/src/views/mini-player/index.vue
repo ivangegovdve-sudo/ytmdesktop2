@@ -28,6 +28,8 @@
         </template>
         <template #divider>
           <button class="control-button relative w-4 group-hover:w-auto group-hover:px-2 group-hover:space-x-2 h-4 hover:bg-white/5"
+                  :aria-label="isTop ? 'Disable Stay on Top' : 'Enable Stay on Top'"
+                  :title="isTop ? 'Disable Stay on Top' : 'Enable Stay on Top'"
                   @click="() => toggleStayTop()">
             <LockIcon v-if="isTop"
                       class="group-hover:opacity-100"></LockIcon>
@@ -114,6 +116,7 @@
                       :class="{ active: !!playState?.disliked }"
                       :disabled="trackBusy"
                       aria-label="Dislike"
+                      title="Dislike"
                       :style="{
                         ...(accentColor && !!playState?.disliked
                           ? { color: accentColor, stroke: '#fff' }
@@ -133,6 +136,7 @@
                           : {}),
                       }"
                       aria-label="Like"
+                      title="Like"
                       @click="likeToggle">
                 <LikeIcon />
               </button>
@@ -141,6 +145,8 @@
                 'opacity-70 btn-disabled': lastFMLoading
               }"
                       v-if="lastFM.connected"
+                      aria-label="LastFM Integration"
+                      title="LastFM Integration"
                       @click="authorizeLastFM">
                 <template v-if="lastFM.connected && !lastFM.error && lastFMState !== null">
                   <Spinner size="sm"
@@ -178,6 +184,7 @@
                     class="player-btn"
                     :disabled="trackBusy"
                     aria-label="Previous"
+                    title="Previous"
                     @click="prev">
               <PrevIcon />
             </button>
@@ -185,6 +192,7 @@
                     class="player-btn"
                     :disabled="trackBusy"
                     aria-label="Rewind 10 seconds"
+                    title="Rewind 10 seconds"
                     @click="() => backward()">
               <BackwardIcon />
             </button>
@@ -194,7 +202,8 @@
                   :style="{
                     ...(accentColor ? { borderColor: accentColor } : {}),
                   }"
-                  aria-label="Pause"
+                  :aria-label="playing ? 'Pause' : 'Play'"
+                  :title="playing ? 'Pause' : 'Play'"
                   :disabled="trackBusy"
                   @click="() => (!playing ? play() : pause())">
             <div class="fill-icon fill-zinc-700">
@@ -211,6 +220,7 @@
                     class="player-btn"
                     :disabled="trackBusy"
                     aria-label="Skip 10 seconds"
+                    title="Skip 10 seconds"
                     @click="() => forward()">
               <ForwardIcon />
             </button>
@@ -218,6 +228,7 @@
                     class="player-btn"
                     :disabled="trackBusy"
                     aria-label="Next"
+                    title="Next"
                     @click="next">
               <NextIcon />
             </button>
