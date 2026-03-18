@@ -2,6 +2,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { is } from "@electron-toolkit/utils";
 import { parseWindowUrl } from "../webContentUtils";
 
+vi.mock("electron", () => ({
+  app: { getAppPath: () => "" },
+  BrowserWindow: {},
+}));
+
 vi.mock("@electron-toolkit/utils", () => ({
   is: {
     dev: false,
@@ -50,7 +55,10 @@ describe("webContentUtils", () => {
 
     it("should correctly handle development environment URLs", () => {
       is.dev = true;
-      process.env.ELECTRON_RENDERER_URL = "http://localhost:5173/";
+      Object.defineProperty(process.env, 'ELECTRON_RENDERER_URL', {
+        value: "http://localhost:5173/",
+        writable: true
+      });
 
       const result = parseWindowUrl("");
       expect(result).toBe("http://localhost:5173#/");
@@ -61,7 +69,10 @@ describe("webContentUtils", () => {
 
     it("should correctly handle development environment URLs without trailing slash", () => {
       is.dev = true;
-      process.env.ELECTRON_RENDERER_URL = "http://localhost:5173";
+      Object.defineProperty(process.env, 'ELECTRON_RENDERER_URL', {
+        value: "http://localhost:5173",
+        writable: true
+      });
 
       const result = parseWindowUrl("");
 
