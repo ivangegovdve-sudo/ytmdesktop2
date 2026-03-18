@@ -28,7 +28,9 @@
         </template>
         <template #divider>
           <button class="control-button relative w-4 group-hover:w-auto group-hover:px-2 group-hover:space-x-2 h-4 hover:bg-white/5"
-                  @click="() => toggleStayTop()">
+                  @click="() => toggleStayTop()"
+                  aria-label="Toggle Stay on Top"
+                  title="Toggle Stay on Top">
             <LockIcon v-if="isTop"
                       class="group-hover:opacity-100"></LockIcon>
             <UnLockIcon v-else
@@ -141,7 +143,9 @@
                 'opacity-70 btn-disabled': lastFMLoading
               }"
                       v-if="lastFM.connected"
-                      @click="authorizeLastFM">
+                      @click="authorizeLastFM"
+                      aria-label="LastFM Status"
+                      title="LastFM Status">
                 <template v-if="lastFM.connected && !lastFM.error && lastFMState !== null">
                   <Spinner size="sm"
                            v-if="typeof lastFMState === 'string'" />
