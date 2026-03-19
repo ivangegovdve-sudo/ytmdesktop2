@@ -7,17 +7,30 @@ export default definePlugin(
 		displayName: "Track Change Watcher",
 	},
 	({ domUtils }) => {
-		let destroyStyle: () => void;
 		async function handleThumbnail(_ev, value: string) {
-			if (destroyStyle) destroyStyle();
-			if (value) destroyStyle = await domUtils.createStyle(`:root { --ytmd-thumbnail-url: ${value}; }`); // ! todo: add working css for track change watcher
+			if (value) {
+				document.documentElement.style.setProperty('--ytmd-thumbnail-url', value);
+			} else {
+				document.documentElement.style.removeProperty('--ytmd-thumbnail-url');
+			}
 		}
-		let destroyAccent: () => void;
 		async function handleAccent(_ev, value: string) {
-			if (destroyAccent) destroyAccent();
-			if (value) destroyAccent = await domUtils.createStyle(`:root { --ytmd-thumbnail-accent: ${value}; }`); // ! todo: add working css for track change watcher
+			if (value) {
+				document.documentElement.style.setProperty('--ytmd-thumbnail-accent', value);
+			} else {
+				document.documentElement.style.removeProperty('--ytmd-thumbnail-accent');
+			}
 		}
-		domUtils.ensureDomLoaded(() => {
+		domUtils.ensureDomLoaded(async () => {
+			await domUtils.createStyle(`
+				#progress-bar.ytmusic-player-bar {
+					--paper-slider-active-color: var(--ytmd-thumbnail-accent) !important;
+					--paper-slider-knob-color: var(--ytmd-thumbnail-accent) !important;
+				}
+				ytmusic-player-bar {
+					--ytmusic-player-bar-background: var(--ytmd-thumbnail-accent) !important;
+				}
+			`);
 			window.ipcRenderer.on("css.thumbnail", handleThumbnail);
 			window.ipcRenderer.on("css.thumbnail-accent", handleAccent);
 		});
