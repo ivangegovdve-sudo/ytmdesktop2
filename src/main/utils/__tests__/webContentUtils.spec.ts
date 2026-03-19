@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { is } from "@electron-toolkit/utils";
-import { parseWindowUrl } from "../webContentUtils";
+import { parseWindowUrl, rootWindowInjectCustomCss } from "../webContentUtils";
 
 vi.mock("@electron-toolkit/utils", () => ({
   is: {
@@ -66,6 +66,40 @@ describe("webContentUtils", () => {
       const result = parseWindowUrl("");
 
       expect(result).toBe("http://localhost:5173#/");
+    });
+  });
+
+  describe("rootWindowInjectCustomCss", () => {
+    it("should return false and log error if insertCSS throws an error", async () => {
+      const mockWebContents = {
+        id: 1,
+        insertCSS: vi.fn().mockRejectedValue(new Error("CSS insertion failed")),
+      };
+
+      const mockWebContentsView = {
+        webContents: mockWebContents as any,
+      } as any;
+
+      const result = await rootWindowInjectCustomCss(mockWebContentsView, "body { color: red; }");
+
+      expect(result).toBe(false);
+      expect(mockWebContents.insertCSS).toHaveBeenCalledWith("body { color: red; }");
+    });
+
+    it("should return false and handle unknown errors without a message property", async () => {
+      const mockWebContents = {
+        id: 2,
+        insertCSS: vi.fn().mockRejectedValue(null),
+      };
+
+      const mockWebContentsView = {
+        webContents: mockWebContents as any,
+      } as any;
+
+      const result = await rootWindowInjectCustomCss(mockWebContentsView, "body { color: blue; }");
+
+      expect(result).toBe(false);
+      expect(mockWebContents.insertCSS).toHaveBeenCalledWith("body { color: blue; }");
     });
   });
 });
