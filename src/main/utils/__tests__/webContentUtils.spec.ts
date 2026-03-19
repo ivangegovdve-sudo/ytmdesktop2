@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { is } from "@electron-toolkit/utils";
-import { parseWindowUrl } from "../webContentUtils";
+import type { WebContentsView } from "electron";
+import { parseWindowUrl, rootWindowClearCustomCss, rootWindowInjectCustomCss } from "../webContentUtils";
 
 vi.mock("@electron-toolkit/utils", () => ({
   is: {
@@ -11,6 +12,10 @@ vi.mock("@electron-toolkit/utils", () => ({
     isMacOS: false,
     isWindows: true,
   },
+}));
+
+vi.mock("electron", () => ({
+  BrowserWindow: vi.fn(),
 }));
 
 describe("webContentUtils", () => {
@@ -66,6 +71,24 @@ describe("webContentUtils", () => {
       const result = parseWindowUrl("");
 
       expect(result).toBe("http://localhost:5173#/");
+    });
+  });
+
+  describe("rootWindowClearCustomCss", () => {
+    it("should return false when removeInsertedCSS throws an error", async () => {
+      const mockWebContents = {
+        id: 999,
+        insertCSS: vi.fn().mockResolvedValue("mock-css-key"),
+        removeInsertedCSS: vi.fn().mockRejectedValue(new Error("Mock error")),
+      };
+
+      const mockView = { webContents: mockWebContents } as unknown as WebContentsView;
+
+      // Setup state by injecting CSS first
+      await rootWindowInjectCustomCss(mockView, "body { color: red; }");
+
+      const result = await rootWindowClearCustomCss(mockView);
+      expect(result).toBe(false);
     });
   });
 });
