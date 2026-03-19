@@ -66,7 +66,7 @@ export const createPopup = async (options?: BrowserWindowConstructorOptions) => 
 		webPreferences: {
 			disableHtmlFullscreenWindowResize: true,
 			nodeIntegration: false,
-			sandbox: false,
+			sandbox: true,
 			webSecurity: isProduction,
 			contextIsolation: false, // window object is required to be rewritten for tracking current track
 			...(options?.webPreferences ? options.webPreferences : {}),
