@@ -7,15 +7,11 @@ export default definePlugin(
 		displayName: "Track Change Watcher",
 	},
 	({ domUtils }) => {
-		let destroyStyle: () => void;
-		async function handleThumbnail(_ev, value: string) {
-			if (destroyStyle) destroyStyle();
-			if (value) destroyStyle = await domUtils.createStyle(`:root { --ytmd-thumbnail-url: ${value}; }`); // ! todo: add working css for track change watcher
+		function handleThumbnail(_ev, value: string) {
+			document.documentElement.style.setProperty("--ytmd-thumbnail-url", value || "none");
 		}
-		let destroyAccent: () => void;
-		async function handleAccent(_ev, value: string) {
-			if (destroyAccent) destroyAccent();
-			if (value) destroyAccent = await domUtils.createStyle(`:root { --ytmd-thumbnail-accent: ${value}; }`); // ! todo: add working css for track change watcher
+		function handleAccent(_ev, value: string) {
+			document.documentElement.style.setProperty("--ytmd-thumbnail-accent", value || "transparent");
 		}
 		domUtils.ensureDomLoaded(() => {
 			window.ipcRenderer.on("css.thumbnail", handleThumbnail);
