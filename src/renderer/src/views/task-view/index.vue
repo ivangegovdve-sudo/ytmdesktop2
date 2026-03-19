@@ -12,10 +12,12 @@
           <div class="w-px h-6 bg-gray-600"></div>
         </slot>
         <div class="flex items-center space-x-1">
-          <div class="control-button"
-               @click="() => window.api.openWindow('settingsWindow')">
+          <button class="control-button"
+                  aria-label="Settings"
+                  title="Settings"
+                  @click="() => window.api.openWindow('settingsWindow')">
             <SettingsIcon />
-          </div>
+          </button>
         </div>
       </div>
     </div>
