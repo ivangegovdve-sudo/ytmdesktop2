@@ -17,6 +17,12 @@
 Beautiful Youtube Music desktop app that includes several customizations for users and developers.
 </p>
 
+> [!IMPORTANT]
+> This project is an experimental Windows desktop app built with Electron.
+> It is not a deployable website and should not be treated like a Vercel-style web app.
+> The renderer depends on Electron runtime APIs, so browser-only hosting will be incomplete or broken.
+> Use Electron packaging and desktop distribution instead.
+
 [![Discord](https://img.shields.io/discord/834826233195003944?color=%237289DA&label=discord&logo=discord&logoColor=%23ffffff&style=for-the-badge)](https://discord.gg/dq4bZMhMjT)
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Venipa/ytmdesktop2?style=for-the-badge)](https://github.com/Venipa/ytmdesktop2/releases/latest)
 ![GitHub last commit](https://img.shields.io/github/last-commit/Venipa/ytmdesktop2?style=for-the-badge)
@@ -66,6 +72,9 @@ also make sure to set a custom the port (`append ?port=<custom port> to source f
 &nbsp;&nbsp;
 
 ## Project setup
+
+This repository is meant for local desktop development, packaging, and distribution of the Electron app.
+If you want to test or ship it, use the Electron build and release flows below instead of web deployment platforms.
 
 ```
 yarn
