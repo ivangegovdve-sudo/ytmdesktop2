@@ -9,7 +9,7 @@ type CreateApiViewOptions = { lockSize: LockSizeOptions } & Pick<WebPreferences,
 export const createApiView = async <T extends WebContentsView>(path: string, postFunc?: (ctx: T) => Promise<void> | void, options?: CreateApiViewOptions): Promise<T> => {
 	const view = new WebContentsView({
 		webPreferences: {
-			nodeIntegration: true,
+			nodeIntegration: false,
 			sandbox: false,
 			contextIsolation: true,
 			webSecurity: isProduction,
