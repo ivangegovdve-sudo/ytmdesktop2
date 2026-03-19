@@ -1,3 +1,1 @@
-## 2024-05-18 - Missing ARIA Labels and Non-Semantic Buttons
-**Learning:** Found multiple instances where icon-only controls were implemented using `div` tags with `click` handlers instead of semantic `button` elements, and lacked accessible names (`aria-label`) and hover tooltips (`title`). This pattern was prominent in window control bars and toolbar option areas.
-**Action:** When working on toolbars and control components in this application, proactively check for interactive `div` elements and convert them to `button` elements. Always ensure that icon-only buttons include both `aria-label` and `title` attributes for full accessibility and visual usability.
+## 2024-03-18 - Mini Player ARIA Labels\n**Learning:** The mini player has some icon-only buttons that are missing ARIA labels, which is a common accessibility issue for icon buttons.\n**Action:** Add `aria-label` to all icon-only buttons in the application to ensure they are accessible to screen readers.

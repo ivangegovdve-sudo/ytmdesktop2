@@ -27,7 +27,8 @@
           <MiniPlayerIcon class="antialiased" />
         </template>
         <template #divider>
-          <button class="control-button relative w-4 group-hover:w-auto group-hover:px-2 group-hover:space-x-2 h-4 hover:bg-white/5"
+          <button aria-label="Toggle Stay on Top"
+                  class="control-button relative w-4 group-hover:w-auto group-hover:px-2 group-hover:space-x-2 h-4 hover:bg-white/5"
                   @click="() => toggleStayTop()">
             <LockIcon v-if="isTop"
                       class="group-hover:opacity-100"></LockIcon>
@@ -136,10 +137,11 @@
                       @click="likeToggle">
                 <LikeIcon />
               </button>
-              <button :class="{
-                'player-btn relative size-8 p-1': true,
-                'opacity-70 btn-disabled': lastFMLoading
-              }"
+              <button aria-label="Authorize LastFM"
+                      :class="{
+                        'player-btn relative size-8 p-1': true,
+                        'opacity-70 btn-disabled': lastFMLoading
+                      }"
                       v-if="lastFM.connected"
                       @click="authorizeLastFM">
                 <template v-if="lastFM.connected && !lastFM.error && lastFMState !== null">
