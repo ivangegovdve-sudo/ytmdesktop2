@@ -1,4 +1,5 @@
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, statSync } from "node:fs";
+import { access, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import slugify, { SlugifyOptions } from "@shared/slug";
 import { base64 } from "@shared/utils/base64";
@@ -30,11 +31,15 @@ export const createYmlStore = <T extends Record<string, any> = Record<string, an
 		name,
 	});
 
-export const createEncryptedStore = <T extends Record<string, any> = Record<string, any>>(name: string, options: Options<T> = {} as Options<T>) => {
+export const createEncryptedStore = async <T extends Record<string, any> = Record<string, any>>(name: string, options: Options<T> = {} as Options<T>) => {
 	const encryptionKeyPath = path.join(getStoreUserData(), slugify(name, slugifyOptions) + ".key");
 	const enc = new Encryption({ secret: base64.encode(name) });
-	if (!existsSync(encryptionKeyPath)) writeFileSync(encryptionKeyPath, enc.encrypt({ name, secret: generateRandom(32) }));
-	const encryptionKey = readFileSync(encryptionKeyPath).toString("utf8");
+	try {
+		await access(encryptionKeyPath);
+	} catch {
+		await writeFile(encryptionKeyPath, enc.encrypt({ name, secret: generateRandom(32) }));
+	}
+	const encryptionKey = (await readFile(encryptionKeyPath)).toString("utf8");
 	const payload = enc.decrypt<{ name: string; secret: string }>(encryptionKey);
 	if (!payload || name !== payload?.name) throw new Error("Invalid encryption key");
 	if (!payload.secret) throw new Error("Invalid encryption secret");
