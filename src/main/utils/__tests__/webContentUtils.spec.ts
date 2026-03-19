@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { is } from "@electron-toolkit/utils";
-import { parseWindowUrl } from "../webContentUtils";
+import { parseWindowUrl, rootWindowInjectCustomCss } from "../webContentUtils";
 
 vi.mock("@electron-toolkit/utils", () => ({
   is: {
@@ -68,4 +68,37 @@ describe("webContentUtils", () => {
       expect(result).toBe("http://localhost:5173#/");
     });
   });
+
+  describe("rootWindowInjectCustomCss", () => {
+    it("should return true when css is successfully injected", async () => {
+      const mockWebContentsView = {
+        webContents: {
+          id: 1,
+          insertCSS: vi.fn().mockResolvedValue("css-key"),
+          removeInsertedCSS: vi.fn().mockResolvedValue(undefined),
+        },
+      } as any;
+
+      const result = await rootWindowInjectCustomCss(mockWebContentsView, "body { background: red; }");
+
+      expect(result).toBe(true);
+      expect(mockWebContentsView.webContents.insertCSS).toHaveBeenCalledWith("body { background: red; }");
+    });
+
+    it("should return false and log error when css injection fails", async () => {
+      const mockWebContentsView = {
+        webContents: {
+          id: 2,
+          insertCSS: vi.fn().mockRejectedValue(new Error("Injection failed")),
+          removeInsertedCSS: vi.fn().mockResolvedValue(undefined),
+        },
+      } as any;
+
+      const result = await rootWindowInjectCustomCss(mockWebContentsView, "body { background: blue; }");
+
+      expect(result).toBe(false);
+      expect(mockWebContentsView.webContents.insertCSS).toHaveBeenCalledWith("body { background: blue; }");
+    });
+  });
+
 });
