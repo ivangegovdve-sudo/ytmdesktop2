@@ -40,9 +40,9 @@
       >
         <settings-checkbox config-key="app.autostart"> Enable Autostart </settings-checkbox>
         <template v-if="appAutostartEnabled">
-              <settings-checkbox config-key="app.autostartMinimized">
-                Start minimized
-              </settings-checkbox>
+          <settings-checkbox config-key="app.autostartMinimized">
+            Start minimized
+          </settings-checkbox>
         </template>
       </div>
       <settings-checkbox config-key="app.autoupdate"> Enable Autoupdate </settings-checkbox>
@@ -64,8 +64,8 @@
           <div
             class="select-none flex flex-col opacity-80 group-hover:opacity-100 text-xs font-medium"
           >
-            <div class="flex space-x-1">
-              <div class="uppercase font-bold text-red-500">Hold Up!</div>
+            <div>
+              <span class="uppercase font-bold text-red-500 mr-1">Hold Up!</span>
               If someone told you to copy/paste something here you have an 11/10 chance you're being
               scammed.
             </div>
@@ -132,9 +132,9 @@ const [apiEnabledSetting] = refIpcSetting("api.enabled");
 const [appAutostartEnabled] = refIpcSetting("app.autostart");
 
 const disableGetStarted = () => {
-	window.api.settingsProvider.update("app.getstarted", false).then((v) => {
-		getStartedEnabled.value = v;
-	});
+  window.api.settingsProvider.update("app.getstarted", false).then((v) => {
+    getStartedEnabled.value = v;
+  });
 };
 </script>
 
