@@ -128,7 +128,7 @@ export default class TrackProvider extends BaseProvider implements AfterInit {
 	async getActiveTrackByDOM(): Promise<string | null> {
 		try {
 			const href = await this.views.youtubeView.webContents.executeJavaScript(`document.querySelector("a.ytp-title-link.yt-uix-sessionlink")?.href`);
-			return href ? (new URLSearchParams(href.split("?")[1])?.get("v") ?? null) : null;
+			return href ? (/[?&]v=([^&]+)/.exec(href)?.[1] ?? null) : null;
 		} catch {
 			return null;
 		}
