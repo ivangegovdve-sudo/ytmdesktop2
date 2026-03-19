@@ -1,39 +1,6 @@
 import definePlugin from "@plugins/utils";
 import { PlayerApi } from "ytm-client-api";
 
-// todo
-const trackControls: Record<string, (playerApi: PlayerApi) => any> = {
-	toggle: (player) => {
-		const state = player.getPlayerStateObject();
-		if (!state) throw new Error("Player state not found");
-		state.isPlaying ? player.pauseVideo() : player.playVideo();
-		return {
-			isPlaying: state.isPlaying,
-			time: player.getCurrentTime(),
-		};
-	},
-	play: (playerApi) => {
-		playerApi.playVideo();
-		return {
-			isPlaying: true,
-			time: playerApi.getCurrentTime(),
-		};
-	},
-	pause: (playerApi) => {
-		playerApi.pauseVideo();
-		return {
-			isPlaying: false,
-			time: playerApi.getCurrentTime(),
-		};
-	},
-	next: (playerApi) => playerApi.nextVideo(),
-	prev: (playerApi) => playerApi.previousVideo(),
-	isPlaying: (player) => {
-		const state = player.getPlayerStateObject();
-		if (!state) return;
-		return state.isPlaying;
-	},
-};
 export default definePlugin(
 	"track-api-controls",
 	{
@@ -42,6 +9,39 @@ export default definePlugin(
 	},
 	{
 		afterInit({ log, playerApi, domUtils }) {
+			const trackControls: Record<string, (playerApi: PlayerApi) => any> = {
+				toggle: (player) => {
+					const state = player.getPlayerStateObject();
+					if (!state) throw new Error("Player state not found");
+					state.isPlaying ? player.pauseVideo() : player.playVideo();
+					return {
+						isPlaying: state.isPlaying,
+						time: player.getCurrentTime(),
+					};
+				},
+				play: (playerApi) => {
+					playerApi.playVideo();
+					return {
+						isPlaying: true,
+						time: playerApi.getCurrentTime(),
+					};
+				},
+				pause: (playerApi) => {
+					playerApi.pauseVideo();
+					return {
+						isPlaying: false,
+						time: playerApi.getCurrentTime(),
+					};
+				},
+				next: (playerApi) => playerApi.nextVideo(),
+				prev: (playerApi) => playerApi.previousVideo(),
+				isPlaying: (player) => {
+					const state = player.getPlayerStateObject();
+					if (!state) return;
+					return state.isPlaying;
+				},
+			};
+
 			domUtils.ensureDomLoaded(() => {
 				function setTimeSkip(_ev, data: { time: number; type?: "seek" }) {
 					if (data && typeof data.time === "number") {
