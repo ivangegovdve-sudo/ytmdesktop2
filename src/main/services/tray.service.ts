@@ -36,7 +36,7 @@ export default class TrayProvider extends BaseProvider implements AfterInit, OnD
 		this._tray.setIgnoreDoubleClickEvents(true);
 		this._tray.on("click", (ev) => {
 			if (ev.triggeredByAccelerator) BrowserWindow.fromWebContents(this.views.youtubeView.webContents)?.show();
-			// if (!ev.triggeredByAccelerator && isDevelopment) this.__trayWindow(); // todo
+			if (!ev.triggeredByAccelerator && isDevelopment) this.__trayWindow();
 		});
 		return this._tray;
 	}
