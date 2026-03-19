@@ -9,3 +9,7 @@
 ## 2024-03-15 - Prevent unnecessary re-renders in refIpc
 **Learning:** In Vue/Electron architectures, bridging IPC state directly to Vue reactive references (like `refIpc` values) can trigger unnecessary component tree re-renders. IPC payloads frequently provide new object references for structurally identical data. Because Vue's `ref` uses strict equality (`===`) by default, updating the ref with a structurally identical but distinct object reference will cause components watching that ref to unnecessarily re-render.
 **Action:** Use deep equality checks (e.g., `lodash.isEqual`) when assigning new values from IPC payloads to Vue `ref`s to verify if the content has actually changed before assigning it and triggering reactivity.
+
+## 2024-06-25 - Prevent deep traversal of Vue proxies in deep equality checks
+**Learning:** Using `lodash.isEqual` directly on Vue reactive proxies triggers all reactive getter traps due to synchronous deep traversal, causing severe performance regressions that outweigh the benefits of preventing identical payload re-renders.
+**Action:** Always unwrap Vue reactive proxies using `toRaw()` (e.g., `isEqual(toRaw(state.value), newVal)`) before performing deep equality checks.

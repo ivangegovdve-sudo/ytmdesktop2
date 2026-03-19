@@ -1,7 +1,7 @@
 import eventNames from "@main/utils/eventNames";
 import { IpcRendererEvent } from "electron";
 import { isEqual } from "lodash-es";
-import { Ref, onBeforeMount, onMounted, onUnmounted, ref } from "vue";
+import { Ref, onBeforeMount, onMounted, onUnmounted, ref, toRaw } from "vue";
 import { createLogger } from "./console";
 const logger = createLogger("refIpc");
 type Map<T, R> = ((item: T, name: string, prev: any) => T) | ((item: T, name: string, prev: any) => R);
@@ -33,7 +33,8 @@ export function refIpc<T, R = T>(eventName: string | string[], options?: Partial
 			const vArgs = rawArgs !== true ? data.flat()?.[0] : data;
 			const newVal = objMap(vArgs as any as T, handlerName, state.value);
 			if (ignoreUndefined && typeof newVal === "undefined") return;
-			if (isEqual(state.value, newVal)) return; // Prevent unnecessary component re-renders
+			// Unwrap the Vue proxy to prevent synchronous deep traversals from triggering reactive getter traps, avoiding performance regressions
+			if (isEqual(toRaw(state.value), newVal)) return; // Prevent unnecessary component re-renders
 			onTrigger?.(newVal as any, state.value as any, { eventName: handlerName });
 			state.value = newVal;
 			if (options?.debug) log.debug(`received`, ev, ...data);
