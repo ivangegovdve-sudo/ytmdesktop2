@@ -1,10 +1,10 @@
 import { version as releaseVersion } from "node:os";
-import { AfterInit, BaseProvider, BeforeStart } from "@main/utils/baseProvider";
+import { AfterInit, BaseProvider, BeforeStart, OnDestroy } from "@main/utils/baseProvider";
 import { IpcContext, IpcHandle, IpcOn } from "@main/utils/onIpcEvent";
 import { setSentryEnabled } from "@main/utils/sentry";
 import { logger } from "@shared/utils/console";
 import { stripUndefined } from "@shared/utils/object";
-import { App, BrowserWindow, IpcMainEvent, IpcMainInvokeEvent, shell } from "electron";
+import { App, BrowserWindow, IpcMainEvent, IpcMainInvokeEvent, shell, globalShortcut } from "electron";
 import { clamp } from "lodash-es";
 import { isDevelopment } from "../utils/devUtils";
 import { serverMain } from "../utils/serverEvents";
@@ -14,7 +14,7 @@ const STATE_PAUSE_TIME = 30e4;
 const TEST_RESTART_NEEDED_DIALOG = isDevelopment && process.env.TEST_RESTART_NEEDED_DIALOG === "1";
 const whitelistFileExtensions = /\.(scss|sass|css|txt|log)$/;
 @IpcContext
-export default class AppProvider extends BaseProvider implements AfterInit, BeforeStart {
+export default class AppProvider extends BaseProvider implements AfterInit, BeforeStart, OnDestroy {
 	private appLock: boolean = false;
 	constructor(private _app: App) {
 		super("app");
@@ -41,8 +41,7 @@ export default class AppProvider extends BaseProvider implements AfterInit, Befo
 			}
 		}
 		this.app.commandLine.appendSwitch("ozone-platform-hint", "auto");
-		// TODO: implement own shortcut handler for media keys
-		// this.app.commandLine.appendSwitch("disable-features", "MediaSessionService");
+		this.app.commandLine.appendSwitch("disable-features", "MediaSessionService");
 	}
 	async AfterInit() {
 		this._app.on("browser-window-focus", this.windowFocus.bind(this));
@@ -51,6 +50,19 @@ export default class AppProvider extends BaseProvider implements AfterInit, Befo
 		if (TEST_RESTART_NEEDED_DIALOG) {
 			this.handleRestartNeeded(null);
 		}
+
+		globalShortcut.register("MediaPlayPause", () => {
+			(this.getProvider("api") as any)?.toggleTrackPlayback();
+		});
+		globalShortcut.register("MediaNextTrack", () => {
+			(this.getProvider("api") as any)?.nextTrack();
+		});
+		globalShortcut.register("MediaPreviousTrack", () => {
+			(this.getProvider("api") as any)?.prevTrack();
+		});
+		globalShortcut.register("MediaStop", () => {
+			(this.getProvider("api") as any)?.pauseTrack();
+		});
 	}
 	private _blurTimestamp: Date | null = null;
 	private _blurAfkHandle: any;
@@ -190,6 +202,9 @@ export default class AppProvider extends BaseProvider implements AfterInit, Befo
 		}
 		const evName = "subwindow.close/" + windowName;
 		if (serverMain.eventNames().includes(evName)) serverMain.emit("subwindow.close/" + windowName, _ev);
+	}
+	OnDestroy() {
+		globalShortcut.unregisterAll();
 	}
 	@IpcHandle("app.openFile", {
 		debounce: 500,
