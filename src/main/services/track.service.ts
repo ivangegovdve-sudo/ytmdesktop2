@@ -1,7 +1,7 @@
 import { AfterInit, BaseProvider } from "@main/utils/baseProvider";
 import { IpcContext, IpcOn } from "@main/utils/onIpcEvent";
 import type { TrackData } from "@main/utils/trackData";
-import { App } from "electron";
+import { App, systemPreferences } from "electron";
 import { EventEmitter } from "events";
 import { clamp, clone, debounce } from "lodash-es";
 import Vibrant from "node-vibrant";
@@ -320,7 +320,17 @@ export default class TrackProvider extends BaseProvider implements AfterInit {
 	private _currentPallete: { id: string; color: string } | null = null;
 	async getTrackAccent(track: TrackData = this.trackData) {
 		const thumbnailUrl = track?.video?.thumbnail?.thumbnails?.[0]?.url;
-		if (!thumbnailUrl) return null;
+		if (!thumbnailUrl) {
+			try {
+				if (systemPreferences.getAccentColor) {
+					const hex = systemPreferences.getAccentColor();
+					return hex ? `#${hex}` : null;
+				}
+			} catch (e) {
+				this.logger.error("Failed to get system accent color", e);
+			}
+			return null;
+		}
 
 		const videoId = track.video.videoId;
 		if (this._currentPallete && this._currentPallete.id === videoId) return this._currentPallete.color;
