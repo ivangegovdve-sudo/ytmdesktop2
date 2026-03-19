@@ -2,3 +2,7 @@
 **Vulnerability:** `nodeIntegration: true` was enabled in `createView` and `createPopup` in `src/main/utils/view.ts` and not explicitly disabled for `createYoutubeView` in `src/main/utils/windowManager.ts`. Since `contextIsolation` was also set to `false`, this would allow any remote code (like an XSS on YouTube Music) full access to Node APIs, leading to RCE.
 **Learning:** In Electron, views that load remote content MUST have `nodeIntegration: false`.
 **Prevention:** Always ensure `nodeIntegration` is `false` (which is the default in newer Electron versions, but explicitly disabling it is best when migrating or overriding defaults) and use `contextIsolation: true` with a safe preload script.
+## 2025-05-23 - Enable Electron Sandbox for Views
+**Vulnerability:** Found `sandbox: false` configurations in various Electron window and view setups (`createApiView`, `createView`, `createPopup`, `createRootWindow`, `createYoutubeView`). Disabling the sandbox weakens defense-in-depth, potentially allowing an attacker who exploits a renderer vulnerability to escape into the OS.
+**Learning:** `sandbox: false` is often set unintentionally when trying to ensure features work, but with modern context isolation and correctly designed preload scripts (with proper contextBridge exposure), disabling the sandbox is unnecessary.
+**Prevention:** Always verify if sandboxing can be left enabled (which is the default in modern Electron, `sandbox: true`). Only disable if absolutely required by unsupported native extensions, and even then, isolate properly.
