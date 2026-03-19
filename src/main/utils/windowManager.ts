@@ -64,7 +64,7 @@ export class WindowManager {
 			maximizable: true,
 			show: false,
 			webPreferences: {
-				nodeIntegration: true,
+				nodeIntegration: false,
 				contextIsolation: true,
 				sandbox: false,
 				webSecurity: isProduction,
