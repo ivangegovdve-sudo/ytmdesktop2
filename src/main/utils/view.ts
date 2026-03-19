@@ -22,6 +22,12 @@ export const createApiView = async <T extends WebContentsView>(path: string, pos
 	if (postFunc) await Promise.resolve(postFunc(view));
 	const wnd = BrowserWindow.fromWebContents(view.webContents);
 	if (wnd) lockSizeToParent(wnd, options?.lockSize)(view);
+	view.webContents.setWindowOpenHandler(({ url }) => {
+		if (url.startsWith("http")) {
+			shell.openExternal(url);
+		}
+		return { action: "deny" };
+	});
 	return view;
 };
 export const createView = async <T extends WebContentsView>(
@@ -44,6 +50,12 @@ export const createView = async <T extends WebContentsView>(
 	if (postFunc) await Promise.resolve(postFunc(view));
 	const wnd = BrowserWindow.fromWebContents(view.webContents);
 	if (wnd) lockSizeToParent(wnd)(view);
+	view.webContents.setWindowOpenHandler(({ url }) => {
+		if (url.startsWith("http")) {
+			shell.openExternal(url);
+		}
+		return { action: "deny" };
+	});
 	return view;
 };
 export const createPopup = async (options?: BrowserWindowConstructorOptions) => {
