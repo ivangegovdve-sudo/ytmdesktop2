@@ -27,7 +27,9 @@
           <MiniPlayerIcon class="antialiased" />
         </template>
         <template #divider>
-          <button class="control-button relative w-4 group-hover:w-auto group-hover:px-2 group-hover:space-x-2 h-4 hover:bg-white/5"
+          <button aria-label="Toggle Stay on Top"
+                  title="Toggle Stay on Top"
+                  class="control-button relative w-4 group-hover:w-auto group-hover:px-2 group-hover:space-x-2 h-4 hover:bg-white/5"
                   @click="() => toggleStayTop()">
             <LockIcon v-if="isTop"
                       class="group-hover:opacity-100"></LockIcon>
@@ -114,6 +116,7 @@
                       :class="{ active: !!playState?.disliked }"
                       :disabled="trackBusy"
                       aria-label="Dislike"
+                      title="Dislike"
                       :style="{
                         ...(accentColor && !!playState?.disliked
                           ? { color: accentColor, stroke: '#fff' }
@@ -133,10 +136,13 @@
                           : {}),
                       }"
                       aria-label="Like"
+                      title="Like"
                       @click="likeToggle">
                 <LikeIcon />
               </button>
-              <button :class="{
+              <button aria-label="LastFM Integration"
+                      title="LastFM Integration"
+                      :class="{
                 'player-btn relative size-8 p-1': true,
                 'opacity-70 btn-disabled': lastFMLoading
               }"
@@ -178,6 +184,7 @@
                     class="player-btn"
                     :disabled="trackBusy"
                     aria-label="Previous"
+                    title="Previous"
                     @click="prev">
               <PrevIcon />
             </button>
@@ -185,6 +192,7 @@
                     class="player-btn"
                     :disabled="trackBusy"
                     aria-label="Rewind 10 seconds"
+                    title="Rewind 10 seconds"
                     @click="() => backward()">
               <BackwardIcon />
             </button>
@@ -194,7 +202,8 @@
                   :style="{
                     ...(accentColor ? { borderColor: accentColor } : {}),
                   }"
-                  aria-label="Pause"
+                  :aria-label="!playing ? 'Play' : 'Pause'"
+                  :title="!playing ? 'Play' : 'Pause'"
                   :disabled="trackBusy"
                   @click="() => (!playing ? play() : pause())">
             <div class="fill-icon fill-zinc-700">
@@ -211,6 +220,7 @@
                     class="player-btn"
                     :disabled="trackBusy"
                     aria-label="Skip 10 seconds"
+                    title="Skip 10 seconds"
                     @click="() => forward()">
               <ForwardIcon />
             </button>
@@ -218,6 +228,7 @@
                     class="player-btn"
                     :disabled="trackBusy"
                     aria-label="Next"
+                    title="Next"
                     @click="next">
               <NextIcon />
             </button>

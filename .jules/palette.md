@@ -1,3 +1,6 @@
 ## 2024-05-18 - Missing ARIA Labels and Non-Semantic Buttons
 **Learning:** Found multiple instances where icon-only controls were implemented using `div` tags with `click` handlers instead of semantic `button` elements, and lacked accessible names (`aria-label`) and hover tooltips (`title`). This pattern was prominent in window control bars and toolbar option areas.
 **Action:** When working on toolbars and control components in this application, proactively check for interactive `div` elements and convert them to `button` elements. Always ensure that icon-only buttons include both `aria-label` and `title` attributes for full accessibility and visual usability.
+## 2024-05-18 - Mini-Player Interactive Controls Missing ARIA Attributes
+**Learning:** Found multiple instances in `src/renderer/src/views/mini-player/index.vue` where interactive icon-only buttons lacked essential accessibility attributes, including missing `title` for hover tooltips on nearly all controls, and completely missing `aria-label` attributes on "LastFM" and "Stay on Top" toggle buttons.
+**Action:** Always verify that every control button added, particularly icon-only buttons, includes both an `aria-label` (for screen readers) and a `title` (for mouse hover tooltips) to ensure complete accessibility and usability across all input methods.
