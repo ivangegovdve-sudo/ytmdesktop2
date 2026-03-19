@@ -10,7 +10,7 @@ export const createApiView = async <T extends WebContentsView>(path: string, pos
 	const view = new WebContentsView({
 		webPreferences: {
 			nodeIntegration: false,
-			sandbox: false,
+			sandbox: true,
 			contextIsolation: true,
 			webSecurity: isProduction,
 			allowRunningInsecureContent: !isProduction,
@@ -39,7 +39,7 @@ export const createView = async <T extends WebContentsView>(
 		webPreferences: {
 			disableHtmlFullscreenWindowResize: true,
 			nodeIntegration: false,
-			sandbox: false,
+			sandbox: true,
 			webSecurity: isProduction,
 			allowRunningInsecureContent: !isProduction,
 			contextIsolation: true,
@@ -66,7 +66,7 @@ export const createPopup = async (options?: BrowserWindowConstructorOptions) => 
 		webPreferences: {
 			disableHtmlFullscreenWindowResize: true,
 			nodeIntegration: false,
-			sandbox: false,
+			sandbox: true,
 			webSecurity: isProduction,
 			contextIsolation: false, // window object is required to be rewritten for tracking current track
 			...(options?.webPreferences ? options.webPreferences : {}),
@@ -83,7 +83,7 @@ export const googleLoginPopup = async (authUrl: string, parent?: Electron.Browse
 		nodeIntegrationInSubFrames: false,
 		nodeIntegrationInWorker: false,
 		webSecurity: isProduction,
-		sandbox: false,
+		sandbox: true,
 		contextIsolation: true,
 		allowRunningInsecureContent: false,
 		preload: join(__dirname, "../preload/login.js"),
