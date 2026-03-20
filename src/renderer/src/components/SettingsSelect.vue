@@ -1,11 +1,12 @@
 <template>
   <div class="form-control">
-    <label class="flex flex-col space-y-2 label items-start">
+    <label class="flex flex-col space-y-2 label items-start" :for="configKey">
       <span v-if="$slots.label" class="label-text text-gray-300">
         <slot name="label"></slot>
       </span>
       <select
         v-if="$slots.options"
+        :id="configKey"
         class="select select-bordered w-full"
         :value="value"
         @change="(ev: any) => updateSetting(ev.target.value)"
