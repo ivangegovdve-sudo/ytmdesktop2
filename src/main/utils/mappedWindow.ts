@@ -12,10 +12,11 @@ export interface BrowserWindowViews<T, TView extends WebContentsView = WebConten
 
 export function getViewObject(bwv: { [key: string]: WebContentsView }) {
 	if (!bwv) return {};
-	return Object.entries(bwv)
-		.filter(([, view]) => view?.webContents)
-		.map(([key, view]) => ({ id: view.webContents.id, name: key }))
-		.reduce((l, r) => ({ ...l, [r.name]: r.id }), {});
+	return Object.fromEntries(
+		Object.entries(bwv)
+			.filter(([, view]) => view?.webContents)
+			.map(([key, view]) => [key, view.webContents.id])
+	);
 }
 export function createWindowContext<T, TView extends WebContentsView = WebContentsView>(_data: {
 	main: BrowserWindow;
