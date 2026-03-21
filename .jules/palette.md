@@ -4,3 +4,6 @@
 ## 2024-03-18 - [Dynamic ARIA labels for Toggle Buttons]
 **Learning:** Hardcoded `aria-label` attributes on dynamic media toggle buttons (like Play/Pause) fail to update screen readers when the playback state changes, creating an inaccurate accessibility experience.
 **Action:** When working with toggle buttons, always bind the `aria-label` and `title` dynamically to the reactive state (e.g., `:aria-label="playing ? 'Pause' : 'Play'"`). For simple toggles like Like/Dislike, ensure `aria-pressed` is correctly bound to the true/false state.
+## 2024-05-18 - Explicit Accessibility Bindings in Vue Form Components
+**Learning:** Found instances where `<label>` elements in Vue form components were detached from their associated `<input>` elements, hindering screen reader accessibility and click-to-focus behavior.
+**Action:** When creating or updating form components, ensure explicit accessibility bindings by linking `<label>` elements to `<input>` elements using `:for` and `:id` attributes (e.g., using a unique identifier like `configKey`) to enable proper screen reader association and click-to-focus behavior.
