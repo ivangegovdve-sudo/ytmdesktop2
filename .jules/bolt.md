@@ -13,3 +13,7 @@
 ## 2024-05-18 - Deep Equality Checks on Vue Proxies
 **Learning:** Synchronous deep traversals over Vue Proxies using `lodash.isEqual` trigger all reactive getter traps, causing severe performance regressions that outweigh the benefits of preventing identical payload re-renders.
 **Action:** Always unwrap the Vue proxy first using Vue's `toRaw()` before performing deep equality checks (e.g., `isEqual(toRaw(state.value), newVal)`).
+
+## 2024-05-18 - Optimize O(N^2) Object Creation with Object.fromEntries
+**Learning:** Using `Array.prototype.reduce((acc, curr) => ({ ...acc, [key]: curr.value }), {})` is a common JavaScript anti-pattern. Because the object spread operator `{ ...acc }` creates a shallow copy of the entire accumulator on every single iteration, this results in $O(N^2)$ time complexity and triggers significant garbage collection overhead.
+**Action:** When converting an array to an object map, always use `Object.fromEntries(array.map(...))` to build the object in a single pass with $O(N)$ time complexity and minimal memory allocation.
