@@ -1,9 +1,10 @@
 <template>
   <div class="form-control">
-    <label class="cursor-pointer label">
+    <label class="cursor-pointer label" :for="configKey">
       <span class="label-text text-gray-300"><slot></slot></span>
       <div>
         <input
+          :id="configKey"
           type="checkbox"
           class="checkbox checkbox-primary"
           :checked="value"

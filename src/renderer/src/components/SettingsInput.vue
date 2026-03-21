@@ -1,6 +1,6 @@
 <template>
   <div :class="['form-control', $attrs.class]">
-    <label class="label">
+    <label class="label" :for="configKey">
       <span class="label-text text-gray-300">
         <slot name="label"></slot>
       </span>
@@ -12,6 +12,7 @@
                 @click="() => fileInputRef && fileInputRef.click()"> Browse </button>
       </div>
       <input ref="fileInputRef"
+             :id="configKey"
              :type="$attrs.type"
              :placeholder="$attrs.placeholder as string"
              :accept="$attrs.accept as string"
@@ -19,6 +20,7 @@
              @change="(ev) => updateSetting(ev.target as any)" />
     </template>
     <input v-else
+           :id="configKey"
            :type="$attrs.type as string"
            :placeholder="$attrs.placeholder as string"
            :value="value"
