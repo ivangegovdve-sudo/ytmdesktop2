@@ -54,7 +54,7 @@ export async function createAppWindow(appOptions?: Partial<WindowOptions>) {
 			// See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
 			nodeIntegration: import.meta.env.ELECTRON_NODE_INTEGRATION === "true",
 			contextIsolation: true,
-			sandbox: false,
+			sandbox: import.meta.env.ELECTRON_NODE_INTEGRATION !== "true",
 			preload: join(__dirname, "../preload/api.js"),
 		},
 	});
