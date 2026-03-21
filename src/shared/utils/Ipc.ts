@@ -28,20 +28,18 @@ export function refIpc<T, R = T>(eventName: string | string[], options?: Partial
 	const state = ref<R>(defaultValue as R) as Ref<R>;
 	const handlerNames = [eventName].flat().map((x) => eventNames[x] ?? x);
 	const log = logger.child(handlerNames.join(","));
-	const handlers: { [key: string]: IpcHandler } = Object.fromEntries(
-		handlerNames.map((handlerName) => [
-			handlerName,
-			((ev, ...data) => {
-				const vArgs = rawArgs !== true ? data.flat()?.[0] : data;
-				const newVal = objMap(vArgs as any as T, handlerName, state.value);
-				if (ignoreUndefined && typeof newVal === "undefined") return;
-				if (isEqual(toRaw(state.value), newVal)) return; // Prevent unnecessary component re-renders
-				onTrigger?.(newVal as any, state.value as any, { eventName: handlerName });
-				state.value = newVal;
-				if (options?.debug) log.debug(`received`, ev, ...data);
-			}) as IpcHandler,
-		]),
-	);
+	const handlers: { [key: string]: IpcHandler } = handlerNames.reduce((acc, handlerName) => {
+		acc[handlerName] = ((ev, ...data) => {
+			const vArgs = rawArgs !== true ? data.flat()?.[0] : data;
+			const newVal = objMap(vArgs as any as T, handlerName, state.value);
+			if (ignoreUndefined && typeof newVal === "undefined") return;
+			if (isEqual(toRaw(state.value), newVal)) return; // Prevent unnecessary component re-renders
+			onTrigger?.(newVal as any, state.value as any, { eventName: handlerName });
+			state.value = newVal;
+			if (options?.debug) log.debug(`received`, ev, ...data);
+		}) as IpcHandler;
+		return acc;
+	}, {});
 	onMounted(async () => {
 		log.debug(`mounted`, { getInitialValue, options });
 		handlerNames.forEach((handlerName) => window.api.on(handlerName, handlers[handlerName]));

@@ -13,7 +13,3 @@
 ## 2024-05-18 - Deep Equality Checks on Vue Proxies
 **Learning:** Synchronous deep traversals over Vue Proxies using `lodash.isEqual` trigger all reactive getter traps, causing severe performance regressions that outweigh the benefits of preventing identical payload re-renders.
 **Action:** Always unwrap the Vue proxy first using Vue's `toRaw()` before performing deep equality checks (e.g., `isEqual(toRaw(state.value), newVal)`).
-
-## 2024-05-18 - Avoid using Array.reduce with object spread inside loops
-**Learning:** Using `array.reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {})` to map an array to an object creates a new intermediate object on every iteration, which is an $O(N^2)$ operation. In environments with frequent mappings or large arrays (like IPC handlers, component mappings), this causes significant CPU overhead and garbage collection pauses.
-**Action:** Replace this pattern with `Object.fromEntries(array.map((curr) => [curr.key, curr.value]))`, which mutates the object internally and remains an $O(N)$ operation without creating intermediate garbage.
