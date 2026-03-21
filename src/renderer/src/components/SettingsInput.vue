@@ -9,6 +9,7 @@
       <div class="flex space-x-2 items-center">
         <div class="text-gray-300 flex-1 bg-white bg-opacity-5 text-sm h-12 rounded-lg flex items-center px-3"> {{ value }} </div>
         <button class="btn btn-primary"
+                type="button"
                 @click="() => fileInputRef && fileInputRef.click()"> Browse </button>
       </div>
       <input ref="fileInputRef"
