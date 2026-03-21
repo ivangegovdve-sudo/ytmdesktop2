@@ -40,19 +40,33 @@ import type { TrackData } from "@main/utils/trackData";
 import ExitIcon from "@renderer/assets/icons/close.svg";
 import SettingsIcon from "@renderer/assets/icons/settings.svg";
 import { refIpc } from "@shared/utils/Ipc";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 const showWinBorder = ref(false);
-const accentColor = ref<string | null>("#a0a0a0"); // todo
+const accentColor = ref<string | null>("#a0a0a0");
 
-const [, setTrack] = refIpc<TrackData>("TRACK_CHANGE", {
+const [track, setTrack] = refIpc<TrackData>("TRACK_CHANGE", {
 	ignoreUndefined: true,
 	defaultValue: null,
 });
+
+let accentHandle: any;
+const getCurrentAccent = (retry: number = 0) => {
+	if (accentHandle) clearTimeout(accentHandle);
+	window.ipcRenderer.invoke("api/track/accent").then((clr) => {
+		if (!clr || retry > 2) accentColor.value = clr || "#a0a0a0";
+		else accentColor.value = clr;
+		if (!clr && retry <= 2) accentHandle = setTimeout(() => getCurrentAccent(retry + 1), 500);
+	});
+};
+
+watch(() => track.value?.video?.videoId, () => getCurrentAccent());
+
 document.title = `YouTube Music - Task View`;
 Promise.all([window.process.isWin11(), window.ipcRenderer.invoke("api/track")]).then(([isWin11, currentTrack]) => {
 	showWinBorder.value = window.process.platform === "win32" ? !isWin11 : false;
 	setTrack(currentTrack);
+	getCurrentAccent();
 });
 </script>
 <style lang="scss">
