@@ -87,6 +87,14 @@ export default class LastFMProvider extends BaseProvider implements AfterInit, O
 			fullscreenable: false,
 			modal: true,
 		});
+
+		win.webContents.setWindowOpenHandler(({ url }) => {
+			if (url.startsWith("http")) {
+				shell.openExternal(url);
+			}
+			return { action: "deny" };
+		});
+
 		await win.loadURL(this.client.getUserAuthorizeUrl());
 		const hasSuccessInfo = () => win.webContents.executeJavaScript(`!!document.querySelector("#mantle_skin .alert.alert-success")`);
 		const settings = this.getProvider("settings");
