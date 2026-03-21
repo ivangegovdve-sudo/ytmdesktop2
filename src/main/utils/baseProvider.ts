@@ -73,7 +73,10 @@ export class BaseProvider<TView extends WebContentsView = WebContentsView> {
 		return this.displayName;
 	}
 	__registerProviders(p: BaseProvider[]) {
-		this._providers = p.reduce((l, r) => ({ ...l, [r.getName()]: r }), {});
+		this._providers = p.reduce((l, r) => {
+			l[r.getName()] = r;
+			return l;
+		}, {} as Record<string, BaseProvider & any>);
 	}
 	__registerWindows(views: BrowserWindowViews<any> = {} as BrowserWindowViews<any>) {
 		this._views = views;

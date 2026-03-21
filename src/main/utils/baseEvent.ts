@@ -37,7 +37,10 @@ export class BaseEvent implements IBaseEvent {
 		return (this._providers as BaseProviderNames)[name] as T;
 	}
 	__registerProviders(p: BaseProvider[]) {
-		this._providers = p.reduce((l, r) => ({ ...l, [r.getName()]: r }), {});
+		this._providers = p.reduce((l, r) => {
+			l[r.getName()] = r;
+			return l;
+		}, {} as Record<string, BaseProvider & any>);
 	}
 	__registerApp(app: App) {
 		this._app = app;

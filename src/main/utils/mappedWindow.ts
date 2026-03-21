@@ -15,7 +15,10 @@ export function getViewObject(bwv: { [key: string]: WebContentsView }) {
 	return Object.entries(bwv)
 		.filter(([, view]) => view?.webContents)
 		.map(([key, view]) => ({ id: view.webContents.id, name: key }))
-		.reduce((l, r) => ({ ...l, [r.name]: r.id }), {});
+		.reduce((l, r) => {
+			l[r.name] = r.id;
+			return l;
+		}, {} as Record<string, number>);
 }
 export function createWindowContext<T, TView extends WebContentsView = WebContentsView>(_data: {
 	main: BrowserWindow;
