@@ -2,7 +2,7 @@ pre-commit:
   parallel: true
   commands:
     format:
-      glob: 
+      glob:
         - src/**/*.{js,jsx,ts,tsx,json,yaml,yml,html,vue}
         - tailwind.config.ts
         - vite.config.ts

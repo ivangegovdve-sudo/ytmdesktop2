@@ -1,213 +1,248 @@
 <template>
-  <div class="h-full absolute inset-0 overflow-hidden bg-black flex flex-col"
-       :style="{
-        ...((accentColor &&
-          showWinBorder &&
-          (showWinBorder === 'win11'
-            ? { borderWidth: '2.5px', borderStyle: 'solid' }
-            : showWinBorder
-              ? { borderWidth: '1px', borderStyle: 'solid' }
-              : {})) ||
-          {}),
-        ...((accentColor &&
-          (state.maximized || state.fullScreen || state.y === 0
-            ? { borderRadius: '0px', borderWidth: '0px' }
-            : showWinBorder === 'win11'
-              ? { borderRadius: '8px' }
-              : state.platform.isMacOS
-                ? { borderRadius: '12px' }
-                : { borderRadius: '6px' })) ||
-          {}),
-        ...(accentColor && showWinBorder ? { borderColor: `${accentColor}` } : {}),
-      }">
+  <div
+    class="h-full absolute inset-0 overflow-hidden bg-black flex flex-col"
+    :style="{
+      ...((accentColor &&
+        showWinBorder &&
+        (showWinBorder === 'win11'
+          ? { borderWidth: '2.5px', borderStyle: 'solid' }
+          : showWinBorder
+            ? { borderWidth: '1px', borderStyle: 'solid' }
+            : {})) ||
+        {}),
+      ...((accentColor &&
+        (state.maximized || state.fullScreen || state.y === 0
+          ? { borderRadius: '0px', borderWidth: '0px' }
+          : showWinBorder === 'win11'
+            ? { borderRadius: '8px' }
+            : state.platform.isMacOS
+              ? { borderRadius: '12px' }
+              : { borderRadius: '6px' })) ||
+        {}),
+      ...(accentColor && showWinBorder ? { borderColor: `${accentColor}` } : {}),
+    }"
+  >
     <div class="relative">
-      <control-bar title="Mini Player"
-                   class="bg-transparent border-b-0 z-20 pl-4 relative group">
+      <control-bar title="Mini Player" class="bg-transparent border-b-0 z-20 pl-4 relative group">
         <template #icon>
           <MiniPlayerIcon class="antialiased" />
         </template>
         <template #divider>
-          <button class="control-button relative w-4 group-hover:w-auto group-hover:px-2 group-hover:space-x-2 h-4 hover:bg-white/5"
-                  aria-label="Stay on Top"
-                  title="Stay on Top"
-                  @click="() => toggleStayTop()">
-            <LockIcon v-if="isTop"
-                      class="group-hover:opacity-100"></LockIcon>
-            <UnLockIcon v-else
-                        class="opacity-60"></UnLockIcon>
+          <button
+            class="control-button relative w-4 group-hover:w-auto group-hover:px-2 group-hover:space-x-2 h-4 hover:bg-white/5"
+            aria-label="Stay on Top"
+            title="Stay on Top"
+            @click="() => toggleStayTop()"
+          >
+            <LockIcon v-if="isTop" class="group-hover:opacity-100"></LockIcon>
+            <UnLockIcon v-else class="opacity-60"></UnLockIcon>
             <span class="hidden group-hover:flex text-sm">Stay on Top</span>
           </button>
         </template>
       </control-bar>
-      <div class="absolute h-48 inset-x-0 bg-gradient-to-b from-black to-black/0 -top-32 z-10"></div>
+      <div
+        class="absolute h-48 inset-x-0 bg-gradient-to-b from-black to-black/0 -top-32 z-10"
+      ></div>
     </div>
     <div class="absolute inset-0">
-      <div v-if="thumbnail && accentColor"
-           class="absolute inset-0 opacity-[.25]"
-           :style="{
-            backgroundColor: `${accentColor}`,
-          }"></div>
-      <div v-if="thumbnail"
-           class="absolute inset-0 bg-no-repeat bg-cover bg-center opacity-[.25] scale-125 blur-[8px]"
-           :style="{ backgroundImage: `url(${thumbnail})` }"></div>
+      <div
+        v-if="thumbnail && accentColor"
+        class="absolute inset-0 opacity-[.25]"
+        :style="{
+          backgroundColor: `${accentColor}`,
+        }"
+      ></div>
+      <div
+        v-if="thumbnail"
+        class="absolute inset-0 bg-no-repeat bg-cover bg-center opacity-[.25] scale-125 blur-[8px]"
+        :style="{ backgroundImage: `url(${thumbnail})` }"
+      ></div>
     </div>
     <div class="flex flex-col flex-1">
       <div class="flex flex-col relative z-10 px-6 flex-1 centeronscreen">
         <div class="flex items-start space-x-6">
-          <div class="track-thumbnail flex flex-shrink-0 items-center shadow justify-center relative">
+          <div
+            class="track-thumbnail flex flex-shrink-0 items-center shadow justify-center relative"
+          >
             <template v-if="trackBusy">
-              <div class="absolute inset-0 flex items-center justify-center z-10 rounded-[inherit] overflow-hidden">
+              <div
+                class="absolute inset-0 flex items-center justify-center z-10 rounded-[inherit] overflow-hidden"
+              >
                 <div class="absolute inset-0 bg-black/50 z-[1]"></div>
-                <div class="absolute inset-0 bg-zinc-800/80 z-[2]"
-                     :style="{
-                      ...(accentColor ? { backgroundColor: `${accentColor}20` } : {}),
-                    }"></div>
-                <Spinner size="lg"
-                         class="z-[5]" />
+                <div
+                  class="absolute inset-0 bg-zinc-800/80 z-[2]"
+                  :style="{
+                    ...(accentColor ? { backgroundColor: `${accentColor}20` } : {}),
+                  }"
+                ></div>
+                <Spinner size="lg" class="z-[5]" />
               </div>
             </template>
             <template v-if="thumbnail">
-              <div v-if="accentColor"
-                   class="absolute inset-0 rounded-[inherit] z-[1]"
-                   :style="{
-                    boxShadow: `10px 12px 12px -2px ${accentColor}50, 0 0 0 .1rem ${accentColor}`,
-                  }"></div>
-              <div v-if="accentColor"
-                   class="absolute -inset-2 rounded-xl z-[2]"
-                   :style="{
-                    backgroundImage: `linear-gradient(${accentColor}a0, ${accentColor}00, ${accentColor}10, ${accentColor}f0)`,
-                  }"></div>
+              <div
+                v-if="accentColor"
+                class="absolute inset-0 rounded-[inherit] z-[1]"
+                :style="{
+                  boxShadow: `10px 12px 12px -2px ${accentColor}50, 0 0 0 .1rem ${accentColor}`,
+                }"
+              ></div>
+              <div
+                v-if="accentColor"
+                class="absolute -inset-2 rounded-xl z-[2]"
+                :style="{
+                  backgroundImage: `linear-gradient(${accentColor}a0, ${accentColor}00, ${accentColor}10, ${accentColor}f0)`,
+                }"
+              ></div>
               <div class="absolute inset-0 rounded-[inherit] overflow-hidden">
-                <img class="absolute inset-0 h-full w-full object-center object-cover opacity-[.5] scale-[1.12] blur-[4px] z-[5]"
-                     :src="thumbnail"
-                     alt=""
-                     loading="lazy"
-                     @load="handleAccent" />
+                <img
+                  class="absolute inset-0 h-full w-full object-center object-cover opacity-[.5] scale-[1.12] blur-[4px] z-[5]"
+                  :src="thumbnail"
+                  alt=""
+                  loading="lazy"
+                  @load="handleAccent"
+                />
               </div>
-              <img :src="thumbnail"
-                   alt=""
-                   class="w-full object-center object-contain z-[6] rounded-[inherit]"
-                   loading="lazy" />
+              <img
+                :src="thumbnail"
+                alt=""
+                class="w-full object-center object-contain z-[6] rounded-[inherit]"
+                loading="lazy"
+              />
             </template>
-            <div v-else
-                 class="absolute inset-0 flex items-center justify-center rounded-[inherit]">
-              <MiniPlayerIcon class="w-24 h-24 md:w-40 md:h-40 text-zinc-50"
-                              :style="{
-                                ...(accentColor ? { color: accentColor } : {}),
-                              }" />
+            <div v-else class="absolute inset-0 flex items-center justify-center rounded-[inherit]">
+              <MiniPlayerIcon
+                class="w-24 h-24 md:w-40 md:h-40 text-zinc-50"
+                :style="{
+                  ...(accentColor ? { color: accentColor } : {}),
+                }"
+              />
             </div>
           </div>
           <div class="flex flex-col flex-1 h-full truncate">
-            <div v-if="track?.video"
-                 class="min-w-0 flex-auto space-y-1 font-semibold truncate">
+            <div v-if="track?.video" class="min-w-0 flex-auto space-y-1 font-semibold truncate">
               <h2 class="text-zinc-50 text-lg truncate">{{ track.video.title }}</h2>
-              <p class="text-zinc-400 text-sm md:text-base lg:text-lg leading-6 truncate"> by {{ track.video.author }} </p>
-              <div v-if="time"
-                   class="text-zinc-400 text-sm space-x-1 flex items-center whitespace-pre">
+              <p class="text-zinc-400 text-sm md:text-base lg:text-lg leading-6 truncate">
+                by {{ track.video.author }}
+              </p>
+              <div
+                v-if="time"
+                class="text-zinc-400 text-sm space-x-1 flex items-center whitespace-pre"
+              >
                 <p class="track-status-time tabular-nums">{{ time[0] }}</p>
                 <span>/</span>
                 <p class="track-status-time tabular-nums">{{ time[1] }}</p>
               </div>
             </div>
             <div class="flex items-center space-x-2 mt-auto flex-shrink-0">
-              <button v-if="playState?.disliked !== undefined"
-                      type="button"
-                      class="player-btn"
-                      :class="{ active: !!playState?.disliked }"
-                      :disabled="trackBusy"
-                      aria-label="Dislike"
-                      title="Dislike"
-                      :aria-pressed="!!playState?.disliked"
-                      :style="{
-                        ...(accentColor && !!playState?.disliked
-                          ? { color: accentColor, stroke: '#fff' }
-                          : {}),
-                      }"
-                      @click="dislikeToggle">
+              <button
+                v-if="playState?.disliked !== undefined"
+                type="button"
+                class="player-btn"
+                :class="{ active: !!playState?.disliked }"
+                :disabled="trackBusy"
+                aria-label="Dislike"
+                title="Dislike"
+                :aria-pressed="!!playState?.disliked"
+                :style="{
+                  ...(accentColor && !!playState?.disliked
+                    ? { color: accentColor, stroke: '#fff' }
+                    : {}),
+                }"
+                @click="dislikeToggle"
+              >
                 <LikeIcon class="rotate-180" />
               </button>
-              <button v-if="playState?.liked !== undefined"
-                      type="button"
-                      class="player-btn"
-                      :class="{ active: !!playState?.liked }"
-                      :disabled="trackBusy"
-                      :style="{
-                        ...(accentColor && !!playState?.liked
-                          ? { color: accentColor, stroke: '#fff' }
-                          : {}),
-                      }"
-                      aria-label="Like"
-                      title="Like"
-                      :aria-pressed="!!playState?.liked"
-                      @click="likeToggle">
+              <button
+                v-if="playState?.liked !== undefined"
+                type="button"
+                class="player-btn"
+                :class="{ active: !!playState?.liked }"
+                :disabled="trackBusy"
+                :style="{
+                  ...(accentColor && !!playState?.liked
+                    ? { color: accentColor, stroke: '#fff' }
+                    : {}),
+                }"
+                aria-label="Like"
+                title="Like"
+                :aria-pressed="!!playState?.liked"
+                @click="likeToggle"
+              >
                 <LikeIcon />
               </button>
-              <button :class="{
-                'player-btn relative size-8 p-1': true,
-                'opacity-70 btn-disabled': lastFMLoading
-              }"
-                      aria-label="LastFM Integration"
-                      title="LastFM Integration"
-                      v-if="lastFM.connected"
-                      @click="authorizeLastFM">
-                <template v-if="lastFM.connected && !lastFM.error && lastFMState !== null">
-                  <Spinner size="sm"
-                           v-if="typeof lastFMState === 'string'" />
-                  <CheckIcon v-else-if="lastFMState === true"
-                             class="text-green-500" />
-                  <AlertCircleIcon v-else-if="lastFMState === false"
-                                   class="text-red-500" />
-                </template>
-                <LastFMIcon :class="{
-                  'text-green-500': lastFM.connected && !lastFM.error,
-                  'text-red-500': lastFM.error,
+              <button
+                :class="{
+                  'player-btn relative size-8 p-1': true,
+                  'opacity-70 btn-disabled': lastFMLoading,
                 }"
-                            v-else></LastFMIcon>
+                aria-label="LastFM Integration"
+                title="LastFM Integration"
+                v-if="lastFM.connected"
+                @click="authorizeLastFM"
+              >
+                <template v-if="lastFM.connected && !lastFM.error && lastFMState !== null">
+                  <Spinner size="sm" v-if="typeof lastFMState === 'string'" />
+                  <CheckIcon v-else-if="lastFMState === true" class="text-green-500" />
+                  <AlertCircleIcon v-else-if="lastFMState === false" class="text-red-500" />
+                </template>
+                <LastFMIcon
+                  :class="{
+                    'text-green-500': lastFM.connected && !lastFM.error,
+                    'text-red-500': lastFM.error,
+                  }"
+                  v-else
+                ></LastFMIcon>
               </button>
             </div>
           </div>
         </div>
       </div>
       <div class="flex flex-col relative z-10">
-        <div v-if="time"
-             class="group pt-4 -mt-4 cursor-pointer"
-             @click="setCurrentTime">
-          <div ref="progressHandle"
-               class="h-1 group-hover:h-2 bg-white transition-all ease-in-out duration-150"
-               :style="{
-                width: `${time[2]}%`,
-                maxWidth: '100%',
-                ...(accentColor ? { backgroundColor: accentColor } : {}),
-              }"></div>
+        <div v-if="time" class="group pt-4 -mt-4 cursor-pointer" @click="setCurrentTime">
+          <div
+            ref="progressHandle"
+            class="h-1 group-hover:h-2 bg-white transition-all ease-in-out duration-150"
+            :style="{
+              width: `${time[2]}%`,
+              maxWidth: '100%',
+              ...(accentColor ? { backgroundColor: accentColor } : {}),
+            }"
+          ></div>
         </div>
         <div class="bg-zinc-50/5 mt-auto text-zinc-200 flex items-center h-16">
           <div class="flex-auto flex items-center justify-evenly">
-            <button type="button"
-                    class="player-btn"
-                    :disabled="trackBusy"
-                    aria-label="Previous"
-                    title="Previous"
-                    @click="prev">
+            <button
+              type="button"
+              class="player-btn"
+              :disabled="trackBusy"
+              aria-label="Previous"
+              title="Previous"
+              @click="prev"
+            >
               <PrevIcon />
             </button>
-            <button type="button"
-                    class="player-btn"
-                    :disabled="trackBusy"
-                    aria-label="Rewind 10 seconds"
-                    title="Rewind 10 seconds"
-                    @click="() => backward()">
+            <button
+              type="button"
+              class="player-btn"
+              :disabled="trackBusy"
+              aria-label="Rewind 10 seconds"
+              title="Rewind 10 seconds"
+              @click="() => backward()"
+            >
               <BackwardIcon />
             </button>
           </div>
-          <button type="button"
-                  class="player-btn-hero"
-                  :style="{
-                    ...(accentColor ? { borderColor: accentColor } : {}),
-                  }"
-                  :aria-label="playing ? 'Pause' : 'Play'"
-                  :title="playing ? 'Pause' : 'Play'"
-                  :disabled="trackBusy"
-                  @click="() => (!playing ? play() : pause())">
+          <button
+            type="button"
+            class="player-btn-hero"
+            :style="{
+              ...(accentColor ? { borderColor: accentColor } : {}),
+            }"
+            :aria-label="playing ? 'Pause' : 'Play'"
+            :title="playing ? 'Pause' : 'Play'"
+            :disabled="trackBusy"
+            @click="() => (!playing ? play() : pause())"
+          >
             <div class="fill-icon fill-zinc-700">
               <template v-if="playing">
                 <PauseIcon />
@@ -218,20 +253,24 @@
             </div>
           </button>
           <div class="flex-auto flex items-center justify-evenly">
-            <button type="button"
-                    class="player-btn"
-                    :disabled="trackBusy"
-                    aria-label="Skip 10 seconds"
-                    title="Skip 10 seconds"
-                    @click="() => forward()">
+            <button
+              type="button"
+              class="player-btn"
+              :disabled="trackBusy"
+              aria-label="Skip 10 seconds"
+              title="Skip 10 seconds"
+              @click="() => forward()"
+            >
               <ForwardIcon />
             </button>
-            <button type="button"
-                    class="player-btn"
-                    :disabled="trackBusy"
-                    aria-label="Next"
-                    title="Next"
-                    @click="next">
+            <button
+              type="button"
+              class="player-btn"
+              :disabled="trackBusy"
+              aria-label="Next"
+              title="Next"
+              @click="next"
+            >
               <NextIcon />
             </button>
           </div>
@@ -302,7 +341,12 @@ onMounted(() => {
   ]).then(([trackData, playStateData, isWin11, stayTop, windowState]) => {
     setTrack(trackData);
     setPlayState(playStateData);
-    showWinBorder.value = window.process.platform === "win32" ? (isWin11 ? "win11" : true) : windowState.platform.isMacOS;
+    showWinBorder.value =
+      window.process.platform === "win32"
+        ? isWin11
+          ? "win11"
+          : true
+        : windowState.platform.isMacOS;
     isTop.value = stayTop;
     console.log({
       showWinBorder: showWinBorder.value,
@@ -323,7 +367,11 @@ const getCurrentAccent = (retry: number = 0) => {
     if (!clr) accentHandle = setTimeout(getCurrentAccent.bind(this, retry + 1), 500);
   });
 };
-function invokeAction(channel: string, payload?: any, options?: { resetProgress?: boolean, busy?: boolean }) {
+function invokeAction(
+  channel: string,
+  payload?: any,
+  options?: { resetProgress?: boolean; busy?: boolean },
+) {
   const { resetProgress = false, busy = true } = options || {};
   if (busy) trackBusy.value = true;
   return window.ipcRenderer.invoke(channel, payload).finally(() => {

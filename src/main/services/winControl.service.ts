@@ -14,78 +14,83 @@ const NextIcon = getNativeImage(NextIconPath);
 
 @IpcContext
 export default class WinControlProvider extends BaseProvider implements AfterInit, OnDestroy {
-	constructor() {
-		super("winControl");
-	}
-	private disposeSubscriptions: (() => void)[] = [];
-	private get trackProvider() {
-		return this.getProvider("track");
-	}
-	private get apiProvider() {
-		return this.getProvider("api");
-	}
-	private get settingsProvider() {
-		return this.getProvider("settings");
-	}
-	async AfterInit() {
-		try {
-			if (platform.isWindows) {
-				this.updateThumbarButtons(this.trackProvider.playing);
-			}
-			const enableTaskbarProgress = this.settingsProvider.instance.app.enableTaskbarProgress;
-			const trackState = this.trackProvider.trackState;
-			if (enableTaskbarProgress) this.updateThumbProgress(trackState?.percentage ?? 0, trackState?.playing ?? false);
-			this.disposeSubscriptions.push(
-				this.trackProvider.onTrackStateChange((s) => {
-					if (s.eventType === "state" && platform.isWindows) this.updateThumbarButtons(s.playing);
-					if (enableTaskbarProgress) this.updateThumbProgress(s.percentage, s.playing);
-				}),
-			);
-		} catch (error) {
-			this.logger.error("Failed to initialize winControl", error);
-		}
-	}
-	private updateThumbarButtons(isPlaying: boolean = false) {
-		if (!platform.isWindows) return;
-		try {
-			this.windowContext.main.setThumbarButtons([
-				{
-					tooltip: "Previous",
-					icon: PreviousIcon,
-					click: () => this.apiProvider.prevTrack(),
-				},
-				{
-					tooltip: "Play/Pause",
-					// Update icon based on play state
-					icon: !isPlaying ? PlayIcon : PauseIcon,
-					click: () => this.apiProvider.toggleTrackPlayback(),
-				},
-				{
-					tooltip: "Next",
-					icon: NextIcon,
-					click: () => this.apiProvider.nextTrack(),
-				},
-			]);
-			this.windowContext.main.setProgressBar(isPlaying ? 1 : 0);
-		} catch (error) {
-			this.logger.error("Failed to update thumbar buttons", error);
-		}
-	}
-	private updateThumbProgress(progress: number = 0, playing: boolean = false) {
-		this.windowContext.main.setProgressBar(progress > 0.0 ? progress / 100 : 0, { mode: platform.isWindows ? (playing ? "normal" : "paused") : "normal" });
-	}
-	async OnDestroy() {
-		this.windowContext.main.setThumbarButtons([]);
-		this.disposeEvents();
-	}
-	private disposeEvents() {
-		this.disposeSubscriptions.forEach((d) => d());
-	}
-	@IpcOn(IPC_EVENT_NAMES.SERVER_SETTINGS_CHANGE, { filter: (key: string) => key === "app.enableTaskbarProgress" })
-	private async __onSettingsUpdate(key: string, value: boolean, prevValue: boolean) {
-		if (!value && prevValue) {
-			this.windowContext.main.setProgressBar(-1);
-			this.disposeEvents();
-		} else if (value && !prevValue) await this.AfterInit();
-	}
+  constructor() {
+    super("winControl");
+  }
+  private disposeSubscriptions: (() => void)[] = [];
+  private get trackProvider() {
+    return this.getProvider("track");
+  }
+  private get apiProvider() {
+    return this.getProvider("api");
+  }
+  private get settingsProvider() {
+    return this.getProvider("settings");
+  }
+  async AfterInit() {
+    try {
+      if (platform.isWindows) {
+        this.updateThumbarButtons(this.trackProvider.playing);
+      }
+      const enableTaskbarProgress = this.settingsProvider.instance.app.enableTaskbarProgress;
+      const trackState = this.trackProvider.trackState;
+      if (enableTaskbarProgress)
+        this.updateThumbProgress(trackState?.percentage ?? 0, trackState?.playing ?? false);
+      this.disposeSubscriptions.push(
+        this.trackProvider.onTrackStateChange((s) => {
+          if (s.eventType === "state" && platform.isWindows) this.updateThumbarButtons(s.playing);
+          if (enableTaskbarProgress) this.updateThumbProgress(s.percentage, s.playing);
+        }),
+      );
+    } catch (error) {
+      this.logger.error("Failed to initialize winControl", error);
+    }
+  }
+  private updateThumbarButtons(isPlaying: boolean = false) {
+    if (!platform.isWindows) return;
+    try {
+      this.windowContext.main.setThumbarButtons([
+        {
+          tooltip: "Previous",
+          icon: PreviousIcon,
+          click: () => this.apiProvider.prevTrack(),
+        },
+        {
+          tooltip: "Play/Pause",
+          // Update icon based on play state
+          icon: !isPlaying ? PlayIcon : PauseIcon,
+          click: () => this.apiProvider.toggleTrackPlayback(),
+        },
+        {
+          tooltip: "Next",
+          icon: NextIcon,
+          click: () => this.apiProvider.nextTrack(),
+        },
+      ]);
+      this.windowContext.main.setProgressBar(isPlaying ? 1 : 0);
+    } catch (error) {
+      this.logger.error("Failed to update thumbar buttons", error);
+    }
+  }
+  private updateThumbProgress(progress: number = 0, playing: boolean = false) {
+    this.windowContext.main.setProgressBar(progress > 0.0 ? progress / 100 : 0, {
+      mode: platform.isWindows ? (playing ? "normal" : "paused") : "normal",
+    });
+  }
+  async OnDestroy() {
+    this.windowContext.main.setThumbarButtons([]);
+    this.disposeEvents();
+  }
+  private disposeEvents() {
+    this.disposeSubscriptions.forEach((d) => d());
+  }
+  @IpcOn(IPC_EVENT_NAMES.SERVER_SETTINGS_CHANGE, {
+    filter: (key: string) => key === "app.enableTaskbarProgress",
+  })
+  private async __onSettingsUpdate(key: string, value: boolean, prevValue: boolean) {
+    if (!value && prevValue) {
+      this.windowContext.main.setProgressBar(-1);
+      this.disposeEvents();
+    } else if (value && !prevValue) await this.AfterInit();
+  }
 }

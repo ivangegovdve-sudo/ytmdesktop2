@@ -1,17 +1,17 @@
 /* eslint-env node */
-require('@rushstack/eslint-patch/modern-module-resolution')
+require("@rushstack/eslint-patch/modern-module-resolution");
 
 module.exports = {
   extends: [
-    'eslint:recommended',
-    'plugin:vue/vue3-recommended',
-    '@electron-toolkit/eslint-config-ts/eslint-recommended',
-    '@vue/eslint-config-typescript/recommended',
-    '@vue/eslint-config-prettier'
+    "eslint:recommended",
+    "plugin:vue/vue3-recommended",
+    "@electron-toolkit/eslint-config-ts/eslint-recommended",
+    "@vue/eslint-config-typescript/recommended",
+    "@vue/eslint-config-prettier",
   ],
   rules: {
-    'vue/require-default-prop': 'off',
-    'vue/multi-word-component-names': 'off',
+    "vue/require-default-prop": "off",
+    "vue/multi-word-component-names": "off",
     "no-unused-vars": "off",
     "@typescript-eslint/no-unnecessary-type-assertion": "off",
     "@typescript-eslint/no-unnecessary-type-parameters": "off",
@@ -19,12 +19,11 @@ module.exports = {
     "@typescript-eslint/no-unused-vars": [
       "warn",
       {
-        "argsIgnorePattern": "^(_|ev)"
-      }
+        argsIgnorePattern: "^(_|ev)",
+      },
     ],
     "no-unused-expressions": "off",
     "no-prototype-builtins": "off",
-    "vue/multi-word-component-names": "off"
+    "vue/multi-word-component-names": "off",
   },
-  
-}
+};

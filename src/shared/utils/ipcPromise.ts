@@ -7,20 +7,24 @@ import { type WebContentsView, ipcMain } from "electron";
  * @param args
  * @returns
  */
-export async function ipcPromise<T = any, R = T>(view: WebContentsView, channel: string, ...args: any[]) {
-	let _timeout: any;
-	view.webContents.send(channel, ...args);
-	return await new Promise<T>((resolve, reject) => {
-		const responseChannelName = channel + "/response";
-		const handler: any = (_ev: any, data: any) => {
-			ipcMain.off(responseChannelName, handler);
-			if (_timeout) clearTimeout(_timeout);
-			resolve(data as T);
-		};
-		ipcMain.on(responseChannelName, handler);
-		_timeout = setTimeout(() => {
-			ipcMain.off(responseChannelName, handler);
-			reject(new Error("IPC Promise timeout."));
-		}, 10000);
-	});
+export async function ipcPromise<T = any, R = T>(
+  view: WebContentsView,
+  channel: string,
+  ...args: any[]
+) {
+  let _timeout: any;
+  view.webContents.send(channel, ...args);
+  return await new Promise<T>((resolve, reject) => {
+    const responseChannelName = channel + "/response";
+    const handler: any = (_ev: any, data: any) => {
+      ipcMain.off(responseChannelName, handler);
+      if (_timeout) clearTimeout(_timeout);
+      resolve(data as T);
+    };
+    ipcMain.on(responseChannelName, handler);
+    _timeout = setTimeout(() => {
+      ipcMain.off(responseChannelName, handler);
+      reject(new Error("IPC Promise timeout."));
+    }, 10000);
+  });
 }

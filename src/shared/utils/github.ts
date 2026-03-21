@@ -9,4 +9,7 @@ export const authorName = GITHUB_AUTHOR;
 export const repoUrl = `https://github.com/${REPO_WITH_AUTHOR}`;
 export const apiRepoUrl = `https://api.github.com/repos/${REPO_WITH_AUTHOR}`;
 export const versionRegex = /^(v[\d,.]+(\-rc\d+)?)?(\ ?-\ ?)/;
-export const compareUrlParse = new RegExp("(?:\\*{2})?Full Changelog(?:\\*{2})?: (" + repoUrl + "/compare/([a-zA-Z0-9.-]+))", "g");
+export const compareUrlParse = new RegExp(
+  "(?:\\*{2})?Full Changelog(?:\\*{2})?: (" + repoUrl + "/compare/([a-zA-Z0-9.-]+))",
+  "g",
+);

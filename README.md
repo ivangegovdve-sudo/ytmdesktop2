@@ -8,7 +8,6 @@
  </picture>
 </div>
 
-
 <h2 align="center">
     Youtube Music for Desktop (ytmdesktop2)
 </h2>
@@ -43,11 +42,9 @@ Beautiful Youtube Music desktop app that includes several customizations for use
 
 ![explorer_JVI8CNSAaY](https://github.com/user-attachments/assets/599e34fc-d47f-42f4-8650-8fdcc20f259d)
 
-
 ### Discord Rich Presence
 
 <img width="285" height="133" alt="DiscordPTB_rObJDxsJQ8" src="https://github.com/user-attachments/assets/6f6c6836-8916-4a58-940e-e25d632e66ad" />
-
 
 ### Custom CSS
 

@@ -9,7 +9,6 @@
   #sliderContainer {
     margin-left: 0 !important;
     margin-right: 0 !important;
-
   }
 }
 
@@ -114,7 +113,6 @@ tp-yt-paper-listbox.ytmusic-menu-popup-renderer {
   border-radius: 8px;
 }
 
-
 // player icon/button sizes adjustments
 
 $playerIconSize: 20px;
@@ -144,7 +142,7 @@ ytmusic-player-bar .play-pause-button.ytmusic-player-bar {
   }
 }
 
-button.yt-icon-button>yt-icon {
+button.yt-icon-button > yt-icon {
   height: $playerIconSize - 4px !important;
   width: $playerIconSize - 4px !important;
 

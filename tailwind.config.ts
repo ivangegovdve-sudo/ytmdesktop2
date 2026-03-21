@@ -1,4 +1,3 @@
-
 import svgToDataUri from "mini-svg-data-uri";
 import type { Config } from "tailwindcss";
 import tailwindAnimate from "tailwindcss-animate";
@@ -32,7 +31,6 @@ export default {
     },
     extend: {
       colors: {
-        
         gray: {
           "50": "#f4f4f4",
           "100": "#e9e9ea",
@@ -54,7 +52,7 @@ export default {
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
-        }
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",

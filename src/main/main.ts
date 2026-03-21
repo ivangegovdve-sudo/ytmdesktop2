@@ -13,100 +13,112 @@ initializeCustomElectronEnvironment();
 const log = logger.child("main");
 
 const runApp = async function () {
-	const serviceCollection = await createServiceCollection(app),
-		eventCollection = await createEventCollection(app, serviceCollection.getItems());
+  const serviceCollection = await createServiceCollection(app),
+    eventCollection = await createEventCollection(app, serviceCollection.getItems());
 
-	log.debug(`Loaded Providers: ${serviceCollection.getProviderNames().join(", ")}`);
-	log.debug(`Loaded Events: ${eventCollection.getProviderNames().join(", ")}`);
+  log.debug(`Loaded Providers: ${serviceCollection.getProviderNames().join(", ")}`);
+  log.debug(`Loaded Events: ${eventCollection.getProviderNames().join(", ")}`);
 
-	try {
-		await serviceCollection.exec("BeforeStart");
-		await eventCollection.prepare();
-	} catch (ex) {
-		log.error(ex); // before start can be ignored, experimental
-	}
+  try {
+    await serviceCollection.exec("BeforeStart");
+    await eventCollection.prepare();
+  } catch (ex) {
+    log.error(ex); // before start can be ignored, experimental
+  }
 
-	protocol.registerSchemesAsPrivileged([
-		{ scheme: "app", privileges: { secure: true, standard: true } },
-		{
-			scheme: "http",
-			privileges: {
-				standard: true,
+  protocol.registerSchemesAsPrivileged([
+    { scheme: "app", privileges: { secure: true, standard: true } },
+    {
+      scheme: "http",
+      privileges: {
+        standard: true,
 
-				allowServiceWorkers: true,
-				supportFetchAPI: true,
-				corsEnabled: true,
-				stream: true,
-				codeCache: true,
-			},
-		},
-		{
-			scheme: "https",
-			privileges: {
-				standard: true,
+        allowServiceWorkers: true,
+        supportFetchAPI: true,
+        corsEnabled: true,
+        stream: true,
+        codeCache: true,
+      },
+    },
+    {
+      scheme: "https",
+      privileges: {
+        standard: true,
 
-				allowServiceWorkers: true,
-				supportFetchAPI: true,
-				corsEnabled: true,
-				stream: true,
-				codeCache: true,
-			},
-		},
-		{ scheme: "mailto", privileges: { standard: true } },
-	]);
-	const windowManager = new WindowManager();
-	let mainWindow: ReturnType<typeof windowManager.createRootWindow> extends Promise<infer T> ? T : never;
+        allowServiceWorkers: true,
+        supportFetchAPI: true,
+        corsEnabled: true,
+        stream: true,
+        codeCache: true,
+      },
+    },
+    { scheme: "mailto", privileges: { standard: true } },
+  ]);
+  const windowManager = new WindowManager();
+  let mainWindow: ReturnType<typeof windowManager.createRootWindow> extends Promise<infer T>
+    ? T
+    : never;
 
-	const reactivate = async () => {
-		if (BrowserWindow.getAllWindows().length === 0) {
-			mainWindow = await windowManager.createRootWindow();
-			await waitMs(); // next tick
-			mainWindow.main.show();
+  const reactivate = async () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      mainWindow = await windowManager.createRootWindow();
+      await waitMs(); // next tick
+      mainWindow.main.show();
 
-			if (serviceCollection) {
-				serviceCollection.registerWindows(mainWindow);
-				await serviceCollection.exec("AfterInit");
-			}
-		}
-	};
+      if (serviceCollection) {
+        serviceCollection.registerWindows(mainWindow);
+        await serviceCollection.exec("AfterInit");
+      }
+    }
+  };
 
-	app.on("activate", reactivate);
-	app.on("ready", async () => {
-		await waitMs(); // next tick
-		mainWindow = await windowManager.createRootWindow();
-		serviceCollection.registerWindows(mainWindow);
+  app.on("activate", reactivate);
+  app.on("ready", async () => {
+    await waitMs(); // next tick
+    mainWindow = await windowManager.createRootWindow();
+    serviceCollection.registerWindows(mainWindow);
 
-		await waitMs(); // next tick
-		await serviceCollection.exec("OnInit");
+    await waitMs(); // next tick
+    await serviceCollection.exec("OnInit");
 
-		const startupService = serviceCollection.getTypedProvider("startup");
-		log.debug({ isStartupContext: startupService.isStartupContext });
+    const startupService = serviceCollection.getTypedProvider("startup");
+    log.debug({ isStartupContext: startupService.isStartupContext });
 
-		if (startupService.isStartupContext ? !startupService.isEnabled || !startupService.isInitialMinimized : !startupService.isMinimizedArg) {
-			mainWindow.main.show();
-		}
-		await onWindowLoad(mainWindow.main, () => serviceCollection.exec("AfterInit"), { once: true });
-		mainWindow.main.webContents.on("did-finish-load", () => serviceCollection.exec("AfterInit")); // if reloaded run afterInit again
-	});
+    if (
+      startupService.isStartupContext
+        ? !startupService.isEnabled || !startupService.isInitialMinimized
+        : !startupService.isMinimizedArg
+    ) {
+      mainWindow.main.show();
+    }
+    await onWindowLoad(mainWindow.main, () => serviceCollection.exec("AfterInit"), { once: true });
+    mainWindow.main.webContents.on("did-finish-load", () => serviceCollection.exec("AfterInit")); // if reloaded run afterInit again
+  });
 
-	// Window control events
-	serverMain.on("app.minimize", (ev) => {
-		const window = BrowserWindow.fromWebContents(ev.sender);
-		if (window && window.isMinimizable()) window.minimize();
-	});
+  // Window control events
+  serverMain.on("app.minimize", (ev) => {
+    const window = BrowserWindow.fromWebContents(ev.sender);
+    if (window && window.isMinimizable()) window.minimize();
+  });
 
-	serverMain.on("app.maximize", (ev) => {
-		const window = BrowserWindow.fromWebContents(ev.sender);
-		if (window && window.isMaximizable()) window.isMaximized() ? window.unmaximize() : window.maximize();
-	});
+  serverMain.on("app.maximize", (ev) => {
+    const window = BrowserWindow.fromWebContents(ev.sender);
+    if (window && window.isMaximizable())
+      window.isMaximized() ? window.unmaximize() : window.maximize();
+  });
 
-	serverMain.on("app.goback", () => {
-		const { youtubeView } = mainWindow.views ?? {};
-		if (!youtubeView || youtubeView.webContents.isDestroyed() || !youtubeView.webContents.navigationHistory.canGoBack()) return;
-		youtubeView.webContents.navigationHistory.goBack();
-	});
-	attachQuitHandler(mainWindow, serviceCollection);
-	attachTrayState(mainWindow);
+  serverMain.on("app.goback", () => {
+    const { youtubeView } = mainWindow.views ?? {};
+    if (
+      !youtubeView ||
+      youtubeView.webContents.isDestroyed() ||
+      !youtubeView.webContents.navigationHistory.canGoBack()
+    )
+      return;
+    youtubeView.webContents.navigationHistory.goBack();
+  });
+  attachQuitHandler(mainWindow, serviceCollection);
+  attachTrayState(mainWindow);
 };
 
 runApp();

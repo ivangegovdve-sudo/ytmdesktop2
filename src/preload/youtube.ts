@@ -1,7 +1,12 @@
 import { logger } from "@shared/utils/console";
 import pkg from "../../package.json";
 import exposeData, { setContext } from "./base";
-import { createContextExposer, createDomUtils, createInitializationUtils, createPreloadLogger } from "./utils";
+import {
+  createContextExposer,
+  createDomUtils,
+  createInitializationUtils,
+  createPreloadLogger,
+} from "./utils";
 
 const appVersion = pkg.version;
 
@@ -28,7 +33,7 @@ setContext("__initYTMD", initFn);
 
 // Initialize on process load
 process.on("loaded", () => {
-	initFn().catch((err) => {
-		logger.error("Failed to initialize YTMD", err);
-	});
+  initFn().catch((err) => {
+    logger.error("Failed to initialize YTMD", err);
+  });
 });

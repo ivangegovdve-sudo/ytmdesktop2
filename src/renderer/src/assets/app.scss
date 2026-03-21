@@ -6,16 +6,13 @@
   --color-primary: #fff;
 }
 @layer base {
-
   html,
   body,
   #app {
-
     @apply text-gray-100 bg-gray-900 h-full;
   }
 
   html.translucent {
-
     &,
     body {
       @apply bg-transparent;
@@ -85,11 +82,12 @@ span,
   background: var(--ytmd-scrollbar-thumb-color);
   min-height: var(--ytmd-scrollbar-thumb-size);
   min-width: var(--ytmd-scrollbar-thumb-size);
-  border: var(--ytmd-scrollbar-border-width) solid transparent!important;
+  border: var(--ytmd-scrollbar-border-width) solid transparent !important;
   background-clip: padding-box !important;
   transition: background 0.2s;
 }
-::-webkit-scrollbar-thumb:hover, ::-webkit-scrollbar-thumb:active {
+::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:active {
   border: var(--ytmd-scrollbar-border-width) solid transparent;
 }
 

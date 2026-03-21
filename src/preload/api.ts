@@ -7,8 +7,8 @@ contextExposer.exposeAll(preloadRoot);
 
 // Initialize settings management
 (async function () {
-	const settingsManager = await createSettingsManager(preloadRoot);
-	contextExposer.expose("settings", {
-		get: settingsManager.get,
-	});
+  const settingsManager = await createSettingsManager(preloadRoot);
+  contextExposer.expose("settings", {
+    get: settingsManager.get,
+  });
 })();

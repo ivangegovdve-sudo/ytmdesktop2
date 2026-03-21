@@ -1,9 +1,13 @@
 <template>
-  <div class="h-full absolute inset-0 overflow-hidden bg-black flex flex-col"
-       :style="{
-        ...(accentColor && showWinBorder ? { border: `1px solid ${accentColor}` } : {}),
-      }">
-    <div class="flex items-stretch justify-between border-b bg-black border-gray-600 select-none h-10 px-2">
+  <div
+    class="h-full absolute inset-0 overflow-hidden bg-black flex flex-col"
+    :style="{
+      ...(accentColor && showWinBorder ? { border: `1px solid ${accentColor}` } : {}),
+    }"
+  >
+    <div
+      class="flex items-stretch justify-between border-b bg-black border-gray-600 select-none h-10 px-2"
+    >
       <div class="flex-auto flex items-center px-2">
         <div class="text-sm">{{ translations.appName }}</div>
       </div>
@@ -12,10 +16,12 @@
           <div class="w-px h-6 bg-gray-600"></div>
         </slot>
         <div class="flex items-center space-x-1">
-          <button class="control-button"
-                  aria-label="Settings"
-                  title="Settings"
-                  @click="() => window.api.openWindow('settingsWindow')">
+          <button
+            class="control-button"
+            aria-label="Settings"
+            title="Settings"
+            @click="() => window.api.openWindow('settingsWindow')"
+          >
             <SettingsIcon />
           </button>
         </div>
@@ -26,8 +32,7 @@
         <button class="task-menu-item">Test</button>
         <button class="task-menu-item">Test</button>
         <button class="task-menu-item">Test</button>
-        <button class="task-menu-item"
-                @click="() => api.quit(true)">
+        <button class="task-menu-item" @click="() => api.quit(true)">
           <ExitIcon class="w-4 h-4" />
           <span>Exit App</span>
         </button>
@@ -46,14 +51,16 @@ const showWinBorder = ref(false);
 const accentColor = ref<string | null>("#a0a0a0"); // todo
 
 const [, setTrack] = refIpc<TrackData>("TRACK_CHANGE", {
-	ignoreUndefined: true,
-	defaultValue: null,
+  ignoreUndefined: true,
+  defaultValue: null,
 });
 document.title = `YouTube Music - Task View`;
-Promise.all([window.process.isWin11(), window.ipcRenderer.invoke("api/track")]).then(([isWin11, currentTrack]) => {
-	showWinBorder.value = window.process.platform === "win32" ? !isWin11 : false;
-	setTrack(currentTrack);
-});
+Promise.all([window.process.isWin11(), window.ipcRenderer.invoke("api/track")]).then(
+  ([isWin11, currentTrack]) => {
+    showWinBorder.value = window.process.platform === "win32" ? !isWin11 : false;
+    setTrack(currentTrack);
+  },
+);
 </script>
 <style lang="scss">
 .task-menu {

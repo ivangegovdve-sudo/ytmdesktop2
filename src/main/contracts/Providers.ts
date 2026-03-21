@@ -19,25 +19,25 @@ import type WindowUtilsProvider from "@main/services/window.service";
 import type YoutubeControlProvider from "@main/services/youtube.service";
 
 declare module "ytmd" {
-	interface BaseProviderNames {
-		api: ApiProvider;
-		app: AppProvider;
-		settings: SettingsProvider;
-		track: TrackProvider;
-		discord: DiscordProvider;
-		events: EventProvider;
-		customcss: CustomCSSProvider;
-		mediaController: MediaControlProvider;
-		mp: MiniPlayerProvider;
-		navigation: NavigationProvider;
-		startup: StartupProvider;
-		tray: TrayProvider;
-		update: UpdateProvider;
-		lastfm: LastFMProvider;
-		youtube: YoutubeControlProvider;
-		window: WindowUtilsProvider;
-		volumeRatio: VolumeRatioProvider;
-		touchbar: TouchbarProvider;
-		winControl: WinControlProvider;
-	}
+  interface BaseProviderNames {
+    api: ApiProvider;
+    app: AppProvider;
+    settings: SettingsProvider;
+    track: TrackProvider;
+    discord: DiscordProvider;
+    events: EventProvider;
+    customcss: CustomCSSProvider;
+    mediaController: MediaControlProvider;
+    mp: MiniPlayerProvider;
+    navigation: NavigationProvider;
+    startup: StartupProvider;
+    tray: TrayProvider;
+    update: UpdateProvider;
+    lastfm: LastFMProvider;
+    youtube: YoutubeControlProvider;
+    window: WindowUtilsProvider;
+    volumeRatio: VolumeRatioProvider;
+    touchbar: TouchbarProvider;
+    winControl: WinControlProvider;
+  }
 }
