@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { is } from "@electron-toolkit/utils";
-import { parseWindowUrl } from "../webContentUtils";
+import { parseWindowUrl, rootWindowClearCustomCss, rootWindowInjectCustomCss } from "../webContentUtils";
+import { WebContentsView } from "electron";
 
 vi.mock("@electron-toolkit/utils", () => ({
   is: {
@@ -14,6 +15,85 @@ vi.mock("@electron-toolkit/utils", () => ({
 }));
 
 describe("webContentUtils", () => {
+
+
+describe("rootWindowCustomCss", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should successfully inject CSS and return true", async () => {
+    const mockWebContents = {
+      id: 1,
+      insertCSS: vi.fn().mockResolvedValue("css-id-1"),
+    };
+    const mockView = { webContents: mockWebContents } as unknown as WebContentsView;
+
+    const result = await rootWindowInjectCustomCss(mockView, "body { background: red; }");
+
+    expect(result).toBe(true);
+    expect(mockWebContents.insertCSS).toHaveBeenCalledWith("body { background: red; }");
+  });
+
+  it("should catch error during CSS injection and return false", async () => {
+    const mockWebContents = {
+      id: 2,
+      insertCSS: vi.fn().mockRejectedValue(new Error("Injection failed")),
+    };
+    const mockView = { webContents: mockWebContents } as unknown as WebContentsView;
+
+    const result = await rootWindowInjectCustomCss(mockView, "body { background: blue; }");
+
+    expect(result).toBe(false);
+    expect(mockWebContents.insertCSS).toHaveBeenCalledWith("body { background: blue; }");
+  });
+
+  it("should return false when clearing CSS if none was injected", async () => {
+    const mockWebContents = {
+      id: 3,
+      removeInsertedCSS: vi.fn().mockResolvedValue(undefined),
+    };
+    const mockView = { webContents: mockWebContents } as unknown as WebContentsView;
+
+    const result = await rootWindowClearCustomCss(mockView);
+
+    expect(result).toBe(false);
+    expect(mockWebContents.removeInsertedCSS).not.toHaveBeenCalled();
+  });
+
+  it("should successfully clear CSS and return true", async () => {
+    const mockWebContents = {
+      id: 4,
+      insertCSS: vi.fn().mockResolvedValue("css-id-4"),
+      removeInsertedCSS: vi.fn().mockResolvedValue(undefined),
+    };
+    const mockView = { webContents: mockWebContents } as unknown as WebContentsView;
+
+    await rootWindowInjectCustomCss(mockView, "body { margin: 0; }");
+
+    const result = await rootWindowClearCustomCss(mockView);
+
+    expect(result).toBe(true);
+    expect(mockWebContents.removeInsertedCSS).toHaveBeenCalledWith("css-id-4");
+  });
+
+  it("should catch error during CSS clearing and return false", async () => {
+    const mockWebContents = {
+      id: 5,
+      insertCSS: vi.fn().mockResolvedValue("css-id-5"),
+      removeInsertedCSS: vi.fn().mockRejectedValue(new Error("Clearing failed")),
+    };
+    const mockView = { webContents: mockWebContents } as unknown as WebContentsView;
+
+    await rootWindowInjectCustomCss(mockView, "body { padding: 0; }");
+
+    const result = await rootWindowClearCustomCss(mockView);
+
+    expect(result).toBe(false);
+    expect(mockWebContents.removeInsertedCSS).toHaveBeenCalledWith("css-id-5");
+  });
+});
+
   describe("parseWindowUrl", () => {
     let originalEnv: NodeJS.ProcessEnv;
 
