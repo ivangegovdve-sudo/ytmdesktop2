@@ -43,7 +43,7 @@ import { refIpc } from "@shared/utils/Ipc";
 import { ref } from "vue";
 
 const showWinBorder = ref(false);
-const accentColor = ref<string | null>("#a0a0a0"); // todo
+const accentColor = ref<string | null>(null);
 
 const [, setTrack] = refIpc<TrackData>("TRACK_CHANGE", {
 	ignoreUndefined: true,
@@ -53,6 +53,9 @@ document.title = `YouTube Music - Task View`;
 Promise.all([window.process.isWin11(), window.ipcRenderer.invoke("api/track")]).then(([isWin11, currentTrack]) => {
 	showWinBorder.value = window.process.platform === "win32" ? !isWin11 : false;
 	setTrack(currentTrack);
+	window.ipcRenderer.invoke("api/track/accent").then((clr) => {
+		accentColor.value = clr;
+	});
 });
 </script>
 <style lang="scss">
