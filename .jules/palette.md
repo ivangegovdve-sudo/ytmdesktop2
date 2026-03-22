@@ -8,3 +8,7 @@
 ## 2026-03-20 - Explicit Label Bindings in Vue Components
 **Learning:** Vue components that act as wrappers for forms (like SettingsInput, SettingsSelect, SettingsCheckbox) often have an implicit wrapping `<label>` that surrounds the text but doesn't explicitly bind to the input via `for` and `id` attributes. This lack of explicit binding prevents screen readers from properly associating the label with the input, and also fails to provide the helpful click-to-focus behavior for inputs.
 **Action:** When creating or modifying Vue form wrapper components, always explicitly bind the `<label>` element to the nested `<input>` or `<select>` element using a unique identifier (like `configKey` for settings) with the `:for` and `:id` attributes to ensure proper screen reader support and click interactions.
+
+## 2024-05-19 - Accessible interactive cards
+**Learning:** Interactive cards (like the LastFM toggle) using `@click` on wrapper components (like `SectionCard`) lack semantic meaning, keyboard accessibility, and screen reader announcements for their toggle state.
+**Action:** Wrap the interactive content of such cards in a native `<button>` element with proper `aria-pressed`/`aria-label` attributes, and apply `focus-visible` styles for keyboard navigation. Hide inner inputs using `aria-hidden="true"` and `tabindex="-1"`.

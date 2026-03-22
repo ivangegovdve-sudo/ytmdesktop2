@@ -1,11 +1,13 @@
 <template>
   <div>
-    <SectionCard
-      :loading="loading || lastFM.processing"
-      class="cursor-pointer"
-      @click="toggleLastFM"
-    >
-      <div class="grid grid-cols-[1fr_100px]">
+    <SectionCard :loading="loading || lastFM.processing">
+      <button
+        class="grid grid-cols-[1fr_100px] w-full text-left cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-lg p-1 -m-1"
+        @click="toggleLastFM"
+        :disabled="loading || lastFM.processing"
+        :aria-pressed="lastFM.connected"
+        aria-label="Toggle LastFM Integration"
+      >
         <div class="flex flex-col">
           <h1 class="font-semibold">LastFM</h1>
           <p class="text-sm text-gray-300">manage your last fm connection</p>
@@ -15,9 +17,11 @@
             type="checkbox"
             class="toggle toggle-primary pointer-events-none"
             :checked="lastFM.connected"
+            tabindex="-1"
+            aria-hidden="true"
           />
         </div>
-      </div>
+      </button>
     </SectionCard>
   </div>
 </template>
@@ -28,25 +32,25 @@ import { refIpc } from "@shared/utils/Ipc";
 import { onMounted, ref } from "vue";
 const loading = ref(false);
 const [lastFM, setLastFM] = refIpc("LAST_FM_STATUS", {
-	ignoreUndefined: true,
-	defaultValue: { connected: false, name: null, error: null, processing: false },
+  ignoreUndefined: true,
+  defaultValue: { connected: false, name: null, error: null, processing: false },
 });
 onMounted(() => {
-	window.api.action("lastfm.status").then((status) => {
-		setLastFM(status);
-	});
+  window.api.action("lastfm.status").then((status) => {
+    setLastFM(status);
+  });
 });
 function toggleLastFM() {
-	if (loading.value || lastFM.value.processing) return;
-	loading.value = true;
-	window.api
-		.action("lastfm.toggle", !lastFM.value.connected)
-		.then((status) => {
-			setLastFM(status);
-		})
-		.finally(() => {
-			loading.value = false;
-		});
+  if (loading.value || lastFM.value.processing) return;
+  loading.value = true;
+  window.api
+    .action("lastfm.toggle", !lastFM.value.connected)
+    .then((status) => {
+      setLastFM(status);
+    })
+    .finally(() => {
+      loading.value = false;
+    });
 }
 </script>
 
