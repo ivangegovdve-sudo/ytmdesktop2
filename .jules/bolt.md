@@ -16,3 +16,6 @@
 ## 2026-03-20 - O(N^2) reduce object spread bottleneck
 **Learning:** Using object spread (...l) inside Array.prototype.reduce() creates a new object on every iteration, leading to $O(N^2)$ time and space complexity which can cause measurable startup delays when building registries (like providers and events).
 **Action:** Replace reduce object spread patterns with direct property assignment (l[key] = value; return l;) or Object.fromEntries() to ensure $O(N)$ performance.
+## 2024-05-18 - Offload string parsing to renderer in executeJavaScript
+**Learning:** When making IPC calls via `webContents.executeJavaScript` in Electron, parsing strings (like `URLSearchParams`) on the main process requires transferring the entire string over the IPC bridge. This increases the data payload and overhead.
+**Action:** Offload string parsing and data extraction (e.g., using Regex) to the renderer side within the injected script to minimize the IPC payload.
