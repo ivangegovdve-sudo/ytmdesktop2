@@ -1,4 +1,5 @@
 import { version as releaseVersion } from "node:os";
+import path from "node:path";
 import { AfterInit, BaseProvider, BeforeStart, OnDestroy } from "@main/utils/baseProvider";
 import { IpcContext, IpcHandle, IpcOn } from "@main/utils/onIpcEvent";
 import { setSentryEnabled } from "@main/utils/sentry";
@@ -202,14 +203,26 @@ export default class AppProvider extends BaseProvider implements AfterInit, Befo
 	}
 	@IpcHandle("app.openFile", {
 		debounce: 500,
-		filter: (ev: IpcMainInvokeEvent, path: string) => {
-			logger.debug("openFile", path, whitelistFileExtensions.test(path));
-			return path && whitelistFileExtensions.test(path);
-		},
 	})
 
-	async handleOpenFile(ev: IpcMainInvokeEvent, path: string) {
-		const errorMessage = await shell.openPath(path);
+	async handleOpenFile(ev: IpcMainInvokeEvent, filePath: string) {
+		if (!filePath || !whitelistFileExtensions.test(filePath)) {
+			this.logger.warn("Attempted to open file with invalid extension", filePath);
+			return false;
+		}
+
+		const normalizedPath = path.normalize(filePath);
+		const allowedPath = path.resolve(this.app.getPath("documents"), "ytmdesktop");
+
+		const relativePath = path.relative(allowedPath, normalizedPath);
+
+		// If the relative path starts with '..' or is absolute, it's outside the allowed directory
+		if (!relativePath || relativePath.startsWith("..") || path.isAbsolute(relativePath)) {
+			this.logger.warn("Attempted to open file outside of allowed directory", filePath);
+			return false;
+		}
+
+		const errorMessage = await shell.openPath(normalizedPath);
 		if (errorMessage) {
 			this.logger.error("Failed to open file", errorMessage);
 			return false;
