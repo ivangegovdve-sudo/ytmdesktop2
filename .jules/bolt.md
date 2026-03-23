@@ -16,3 +16,6 @@
 ## 2026-03-20 - O(N^2) reduce object spread bottleneck
 **Learning:** Using object spread (...l) inside Array.prototype.reduce() creates a new object on every iteration, leading to $O(N^2)$ time and space complexity which can cause measurable startup delays when building registries (like providers and events).
 **Action:** Replace reduce object spread patterns with direct property assignment (l[key] = value; return l;) or Object.fromEntries() to ensure $O(N)$ performance.
+## 2026-03-23 - Reduce IPC payload by offloading extraction to Renderer
+**Learning:** Returning full URLs over IPC from the renderer and parsing them on the main process with `URLSearchParams` incurs overhead and increases payload size.
+**Action:** Use regex parsing inside `executeJavaScript` to only return the necessary extracted string (e.g. track ID) over IPC.
