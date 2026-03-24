@@ -30,6 +30,7 @@
           <button class="control-button relative w-4 group-hover:w-auto group-hover:px-2 group-hover:space-x-2 h-4 hover:bg-white/5"
                   aria-label="Stay on Top"
                   title="Stay on Top"
+                  :aria-pressed="!!isTop"
                   @click="() => toggleStayTop()">
             <LockIcon v-if="isTop"
                       class="group-hover:opacity-100"></LockIcon>

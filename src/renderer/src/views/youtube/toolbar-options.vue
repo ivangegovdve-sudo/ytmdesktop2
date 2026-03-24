@@ -56,12 +56,14 @@
             :disabled="!playState"
             :class="miniPlayer ? { 'opacity-100': miniPlayer?.active, 'opacity-70': !miniPlayer?.active } : {}
               "
+            :aria-pressed="!!miniPlayer?.active"
             @click="() => action('app.miniPlayer')">
       <MiniPlayerIcon />
     </button>
     <button aria-label="Toggle Discord RPC"
             title="Toggle Discord RPC"
             class="control-button relative"
+            :aria-pressed="!!discordEnabled"
             @click="() => toggleSetting('discord.enabled')">
       <RPCIcon :class="{ 'text-red-500': discordConnectionError && discordEnabled, 'opacity-100': discordEnabled || discordConnectionError, 'opacity-70': !discordEnabled || discordLoading }"></RPCIcon>
       <div v-if="discordConnected && !discordConnectionError && !discordLoading"
