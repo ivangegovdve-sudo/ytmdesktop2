@@ -16,3 +16,7 @@
 ## 2026-03-20 - O(N^2) reduce object spread bottleneck
 **Learning:** Using object spread (...l) inside Array.prototype.reduce() creates a new object on every iteration, leading to $O(N^2)$ time and space complexity which can cause measurable startup delays when building registries (like providers and events).
 **Action:** Replace reduce object spread patterns with direct property assignment (l[key] = value; return l;) or Object.fromEntries() to ensure $O(N)$ performance.
+
+## 2024-05-18 - Replacing Mutating Reduce with Object.fromEntries
+**Learning:** While `Object.fromEntries(array.map(...))` is a great way to avoid (N^2)$ object spread overhead, using it to replace an already (N)$ mutating `Array.prototype.reduce` (e.g., `acc[key] = val; return acc`) actually *decreases* performance. This is because `.map()` allocates a new intermediate array of tuples in memory, increasing garbage collection overhead.
+**Action:** When refactoring array aggregations, do not replace a mutating `reduce` with `Object.fromEntries(array.map(...))`. Only use `Object.fromEntries` if the mapping already exists, or if you are specifically eliminating an (N^2)$ spread syntax bottleneck.
