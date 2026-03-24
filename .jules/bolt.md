@@ -16,3 +16,6 @@
 ## 2026-03-20 - O(N^2) reduce object spread bottleneck
 **Learning:** Using object spread (...l) inside Array.prototype.reduce() creates a new object on every iteration, leading to $O(N^2)$ time and space complexity which can cause measurable startup delays when building registries (like providers and events).
 **Action:** Replace reduce object spread patterns with direct property assignment (l[key] = value; return l;) or Object.fromEntries() to ensure $O(N)$ performance.
+## 2026-03-20 - Avoid chained array mappings during application startup
+**Learning:** Using chained array methods like `.map().filter().map()` during application startup (e.g., in `BaseCollection.initializeItems`) creates multiple intermediate array allocations. This increases garbage collection pressure and unnecessarily slows down initialization.
+**Action:** Consolidate chained array mapping operations into a single `for...of` loop to minimize intermediate allocations, particularly in hot paths or startup sequences.
