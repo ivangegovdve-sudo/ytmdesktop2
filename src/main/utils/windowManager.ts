@@ -83,8 +83,13 @@ export class WindowManager {
 		await this.initializeWindowState(bounds);
 
 		this.mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-			if (url.startsWith("http")) {
-				shell.openExternal(url);
+			try {
+				const protocol = new URL(url).protocol;
+				if (protocol === "http:" || protocol === "https:") {
+					shell.openExternal(url);
+				}
+			} catch (_) {
+				// Invalid URL
 			}
 			return { action: "deny" };
 		});
