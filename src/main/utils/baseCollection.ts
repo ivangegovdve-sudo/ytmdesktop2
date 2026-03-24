@@ -31,10 +31,16 @@ export abstract class BaseCollection<T extends CollectionItem> {
 			throw new Error(`Invalid glob pattern: ${globPattern}`);
 		}
 		const collectionEntries = patternImport();
-		this.items = Object.values(collectionEntries)
-			.map((m: any) => m.default)
-			.filter(Boolean)
-			.map((item: any) => new item(this.app));
+
+		// ⚡ Bolt: Consolidate array mappings to avoid intermediate array allocations
+		// Using a for...of loop instead of .map().filter().map() reduces GC pressure.
+		this.items = [];
+		for (const entry of Object.values(collectionEntries)) {
+			const ItemClass = (entry as any).default;
+			if (ItemClass) {
+				this.items.push(new ItemClass(this.app));
+			}
+		}
 
 		// Iterate backwards so that if duplicates exist, the first item added (index 0)
 		// will overwrite the later items in the Map, matching the behavior of `.find()`
@@ -61,10 +67,17 @@ export abstract class BaseCollection<T extends CollectionItem> {
 	}
 
 	protected async executeMethod(methodName: string, ...args: any[]): Promise<any[]> {
-		const itemsWithMethod = this.items.filter((x) => typeof (x as any)[methodName] === "function");
-		if (itemsWithMethod.length === 0) return [];
+		// ⚡ Bolt: Consolidate filter/map into a single loop to avoid an intermediate array
+		// allocation on every lifecycle event hook execution.
+		const promises: Promise<any>[] = [];
+		for (const x of this.items) {
+			if (typeof (x as any)[methodName] === "function") {
+				promises.push(Promise.resolve((x as any)[methodName](...args)));
+			}
+		}
+		if (promises.length === 0) return [];
 
-		return await Promise.all(itemsWithMethod.map((x) => Promise.resolve((x as any)[methodName](...args))));
+		return await Promise.all(promises);
 	}
 
 	getItems(): T[] {
