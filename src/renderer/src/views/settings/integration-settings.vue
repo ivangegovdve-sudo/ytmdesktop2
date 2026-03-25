@@ -2,8 +2,13 @@
   <div>
     <SectionCard
       :loading="loading || lastFM.processing"
-      class="cursor-pointer"
+      class="cursor-pointer hover:bg-white/5 transition-colors focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
+      role="switch"
+      tabindex="0"
+      :aria-checked="!!lastFM.connected"
       @click="toggleLastFM"
+      @keydown.space.prevent="toggleLastFM"
+      @keydown.enter.prevent="toggleLastFM"
     >
       <div class="grid grid-cols-[1fr_100px]">
         <div class="flex flex-col">
