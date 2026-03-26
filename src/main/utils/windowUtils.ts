@@ -62,9 +62,12 @@ export async function createAppWindow(appOptions?: Partial<WindowOptions>) {
 	await loadUrlOfWindow(win, path);
 	if (isDevelopment) win.webContents.openDevTools();
 	win.webContents.setWindowOpenHandler(({ url }) => {
-		if (url.startsWith("http")) {
-			shell.openExternal(url);
-		}
+		try {
+			const protocol = new URL(url).protocol;
+			if (protocol === "http:" || protocol === "https:") {
+				shell.openExternal(url);
+			}
+		} catch (_) {}
 		return { action: "deny" };
 	});
 	syncWindowStateToWebContents(win)(win.webContents);
