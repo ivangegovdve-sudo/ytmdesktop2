@@ -21,28 +21,30 @@ export default function slugify(string: string, options: SlugifyOptions = {}) {
 
 	options = typeof options === "string" ? { replacement: options } : options || {};
 
-	var locale = locales[options.locale!] || {};
+	const locale = locales[options.locale!] || {};
 
-	var replacement = options.replacement === undefined ? "-" : options.replacement;
+	const replacement = options.replacement === undefined ? "-" : options.replacement;
 
-	var trim = options.trim === undefined ? true : options.trim;
+	const trim = options.trim === undefined ? true : options.trim;
 
-	var slug = string
+	// ⚡ Bolt: Hoisted regex out of character loop to prevent O(N^2) complexity
+	const removeRegex = options.remove || /[^\w\s$*_+~.()'"!\-:@]+/g;
+	let slug = string
 		.normalize()
 		.split("")
 		// replace characters based on charMap
-		.reduce(function (result, ch) {
-			var appendChar = locale[ch];
+		.map(function (ch) {
+			let appendChar = locale[ch];
 			if (appendChar === undefined) appendChar = charMap[ch];
 			if (appendChar === undefined) appendChar = ch;
 			if (appendChar === replacement) appendChar = " ";
-			return (
-				result +
-				appendChar
-					// remove not allowed characters
-					.replace(options.remove || /[^\w\s$*_+~.()'"!\-:@]+/g, "")
-			);
-		}, "");
+			return appendChar;
+		})
+		// ⚡ Bolt: Replaced string concatenation with map -> join -> replace
+		// to avoid O(N^2) string allocations and repeated regex parsing.
+		.join("")
+		// remove not allowed characters
+		.replace(removeRegex, "");
 
 	if (options.strict) {
 		slug = slug.replace(/[^A-Za-z0-9\s]/g, "");
