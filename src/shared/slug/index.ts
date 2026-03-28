@@ -27,22 +27,26 @@ export default function slugify(string: string, options: SlugifyOptions = {}) {
 
 	var trim = options.trim === undefined ? true : options.trim;
 
+	const removeRegex = options.remove || /[^\w\s$*_+~.()'"!\-:@]+/g;
+
+	// ⚡ Bolt: Improve slugify performance by replacing O(N^2) Array.reduce()
+	// with embedded String.replace() logic with an O(N) Array.map() and single
+	// hoisted String.replace(). Using replace with regular expressions inside
+	// a reduce loop causes repetitive regex parsing and string allocations.
 	var slug = string
 		.normalize()
 		.split("")
 		// replace characters based on charMap
-		.reduce(function (result, ch) {
+		.map(function (ch) {
 			var appendChar = locale[ch];
 			if (appendChar === undefined) appendChar = charMap[ch];
 			if (appendChar === undefined) appendChar = ch;
 			if (appendChar === replacement) appendChar = " ";
-			return (
-				result +
-				appendChar
-					// remove not allowed characters
-					.replace(options.remove || /[^\w\s$*_+~.()'"!\-:@]+/g, "")
-			);
-		}, "");
+			return appendChar;
+		})
+		.join("")
+		// remove not allowed characters
+		.replace(removeRegex, "");
 
 	if (options.strict) {
 		slug = slug.replace(/[^A-Za-z0-9\s]/g, "");
