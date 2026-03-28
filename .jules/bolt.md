@@ -16,3 +16,6 @@
 ## 2026-03-20 - O(N^2) reduce object spread bottleneck
 **Learning:** Using object spread (...l) inside Array.prototype.reduce() creates a new object on every iteration, leading to $O(N^2)$ time and space complexity which can cause measurable startup delays when building registries (like providers and events).
 **Action:** Replace reduce object spread patterns with direct property assignment (l[key] = value; return l;) or Object.fromEntries() to ensure $O(N)$ performance.
+## 2024-06-25 - Avoid String.prototype.replace inside Array.prototype.reduce
+**Learning:** Using `String.prototype.replace()` with regular expressions inside an `Array.prototype.reduce()` loop (as seen in slug generation) causes O(N^2) complexity due to repeated regex parsing and string allocations on every iteration. This severely limits performance, especially on long strings.
+**Action:** Hoist regex initialization, map characters into an array, join it, and run a single `.replace()` at the end to improve string parsing performance.
