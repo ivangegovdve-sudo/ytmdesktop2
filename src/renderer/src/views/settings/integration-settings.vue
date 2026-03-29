@@ -3,7 +3,12 @@
     <SectionCard
       :loading="loading || lastFM.processing"
       class="cursor-pointer"
+      role="switch"
+      tabindex="0"
+      :aria-checked="!!lastFM.connected"
       @click="toggleLastFM"
+      @keydown.space.prevent="toggleLastFM"
+      @keydown.enter.prevent="toggleLastFM"
     >
       <div class="grid grid-cols-[1fr_100px]">
         <div class="flex flex-col">
@@ -15,6 +20,7 @@
             type="checkbox"
             class="toggle toggle-primary pointer-events-none"
             :checked="lastFM.connected"
+            tabindex="-1"
           />
         </div>
       </div>
