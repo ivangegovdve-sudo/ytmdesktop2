@@ -23,9 +23,12 @@ export const createApiView = async <T extends WebContentsView>(path: string, pos
 	const wnd = BrowserWindow.fromWebContents(view.webContents);
 	if (wnd) lockSizeToParent(wnd, options?.lockSize)(view);
 	view.webContents.setWindowOpenHandler(({ url }) => {
-		if (url.startsWith("http")) {
-			shell.openExternal(url);
-		}
+		try {
+			const protocol = new URL(url).protocol;
+			if (protocol === "http:" || protocol === "https:") {
+				shell.openExternal(url);
+			}
+		} catch (_) {}
 		return { action: "deny" };
 	});
 	return view;
@@ -51,9 +54,12 @@ export const createView = async <T extends WebContentsView>(
 	const wnd = BrowserWindow.fromWebContents(view.webContents);
 	if (wnd) lockSizeToParent(wnd)(view);
 	view.webContents.setWindowOpenHandler(({ url }) => {
-		if (url.startsWith("http")) {
-			shell.openExternal(url);
-		}
+		try {
+			const protocol = new URL(url).protocol;
+			if (protocol === "http:" || protocol === "https:") {
+				shell.openExternal(url);
+			}
+		} catch (_) {}
 		return { action: "deny" };
 	});
 	return view;
@@ -118,14 +124,19 @@ export const googleLoginPopup = async (authUrl: string, parent?: Electron.Browse
 		httpReferrer: defaultUrl,
 	});
 	loginView.webContents.setWindowOpenHandler(({ url }) => {
-		if (!url.startsWith("http")) {
+		try {
+			const protocol = new URL(url).protocol;
+			if (protocol !== "http:" && protocol !== "https:") {
+				return { action: "deny" };
+			}
+			if (/^https?\:\/\/([a-zA-Z0-9]+)?\.google\.([a-z]+)/.test(url)) {
+				shell.openExternal(url);
+				return { action: "deny" };
+			}
+			return { action: "allow" };
+		} catch (_) {
 			return { action: "deny" };
 		}
-		if (/^https?\:\/\/([a-zA-Z0-9]+)?\.google\.([a-z]+)/.test(url)) {
-			shell.openExternal(url);
-			return { action: "deny" };
-		}
-		return { action: "allow" };
 	});
 	if (isDevelopment) {
 		loginView.webContents.openDevTools({ mode: "detach" });
