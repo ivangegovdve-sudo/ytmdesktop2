@@ -27,22 +27,22 @@ export default function slugify(string: string, options: SlugifyOptions = {}) {
 
 	var trim = options.trim === undefined ? true : options.trim;
 
+	var removeRegex = options.remove || /[^\w\s$*_+~.()'"!\-:@]+/g;
+
 	var slug = string
 		.normalize()
 		.split("")
 		// replace characters based on charMap
-		.reduce(function (result, ch) {
+		.map(function (ch) {
 			var appendChar = locale[ch];
 			if (appendChar === undefined) appendChar = charMap[ch];
 			if (appendChar === undefined) appendChar = ch;
 			if (appendChar === replacement) appendChar = " ";
-			return (
-				result +
-				appendChar
-					// remove not allowed characters
-					.replace(options.remove || /[^\w\s$*_+~.()'"!\-:@]+/g, "")
-			);
-		}, "");
+			return appendChar;
+		})
+		.join("")
+		// remove not allowed characters
+		.replace(removeRegex, "");
 
 	if (options.strict) {
 		slug = slug.replace(/[^A-Za-z0-9\s]/g, "");
